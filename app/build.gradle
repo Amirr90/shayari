@@ -70,4 +70,21 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.1.0'
 
     apply plugin: "androidx.navigation.safeargs"
+
+    implementation 'androidx.paging:paging-runtime:2.1.2'
+
+
+    // FirebaseUI for Cloud Firestore
+    implementation 'com.firebaseui:firebase-ui-firestore:7.1.1'
+
+    //for paging Rec
+    implementation 'android.arch.paging:runtime:2.1.1'
+
+
+    implementation 'com.google.android.gms:play-services-ads:19.7.0'
+
+
+    implementation 'com.startapp:inapp-sdk:4.8.+'
+
+
 }

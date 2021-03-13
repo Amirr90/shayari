@@ -21,11 +21,10 @@
     <fragment
         android:id="@+id/dataFragment"
         android:name="com.shayari.DataFragment"
-        android:label="fragment_data"
-        tools:layout="@layout/fragment_data" >
+        tools:layout="@layout/fragment_data">
         <argument
             android:name="id"
-            app:argType="string"
-            android:defaultValue="0" />
+            android:defaultValue="0"
+            app:argType="string" />
     </fragment>
 </navigation>
