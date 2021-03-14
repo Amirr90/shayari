@@ -1,0 +1,92 @@
+{
+  "project_info": {
+    "project_number": "299021430804",
+    "project_id": "shayari-2c632",
+    "storage_bucket": "shayari-2c632.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299021430804:android:d189efa24218bc1b39b701",
+        "android_client_info": {
+          "package_name": "com.shaayaari"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "299021430804-anm9o48b1lhjl9qfhk7se1rga8qfbsjf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shaayaari",
+            "certificate_hash": "d5442f9938db4c279fdf6fefaa644aeabec8da52"
+          }
+        },
+        {
+          "client_id": "299021430804-edciibgfqc8aqrsuhb9gbg5j4rdihgpq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3rH9xhLO0Ynwt7VlcC5CH2NjjaURSIr8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "299021430804-edciibgfqc8aqrsuhb9gbg5j4rdihgpq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299021430804:android:0c705cad0b1ddaf739b701",
+        "android_client_info": {
+          "package_name": "com.shayari"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "299021430804-1kah7bju0c786njilntj87iuao82iomo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shayari",
+            "certificate_hash": "b8bd74315ae1bbe5466dbf109d989f90a93ee740"
+          }
+        },
+        {
+          "client_id": "299021430804-pi7klkl80a0ub7p12nsj8iqqflrm2e1q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shayari",
+            "certificate_hash": "d5442f9938db4c279fdf6fefaa644aeabec8da52"
+          }
+        },
+        {
+          "client_id": "299021430804-edciibgfqc8aqrsuhb9gbg5j4rdihgpq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3rH9xhLO0Ynwt7VlcC5CH2NjjaURSIr8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "299021430804-edciibgfqc8aqrsuhb9gbg5j4rdihgpq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
