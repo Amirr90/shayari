@@ -1,5 +1,8 @@
-package com.shayari;
+package com.shaayaari;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,16 +26,18 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.shayari.databinding.FragmentDataBinding;
-import com.shayari.databinding.ShayariViewBinding;
-import com.shayari.interfaces.DataPageInterface;
-import com.shayari.models.CategoryModel;
-import com.shayari.utils.AppConstant;
-import com.shayari.utils.AppUtils;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.shaayaari.databinding.FragmentDataBinding;
+import com.shaayaari.databinding.ShayariView2Binding;
+import com.shaayaari.interfaces.DataPageInterface;
+import com.shaayaari.models.CategoryModel;
+import com.shaayaari.utils.App;
+import com.shaayaari.utils.AppConstant;
+import com.shaayaari.utils.AppUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -40,7 +45,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.shayari.utils.AppUtils.getUid;
+import static com.shaayaari.utils.AppUtils.getFireStoreReference;
+import static com.shaayaari.utils.AppUtils.getUid;
 
 
 public class DataFragment extends Fragment {
@@ -68,11 +74,24 @@ public class DataFragment extends Fragment {
 
         Objects.requireNonNull(navController.getCurrentDestination()).setLabel(catId);
         setAdapter();
+
+        binding.btnAddData.setOnClickListener(v -> {
+            DataFragmentDirections.ActionDataFragmentToAddDataFragment action = DataFragmentDirections.actionDataFragmentToAddDataFragment();
+            action.setCatId(catId);
+            navController.navigate(action);
+        });
+
+        binding.btnAddData.setVisibility(AppConstant.ADMIN_ID.equals(AppUtils.getUid()) ? View.VISIBLE : View.GONE);
+
     }
 
     private void setAdapter() {
+
+        AppUtils.showRequestDialog(requireActivity());
         Query query = AppUtils.getFireStoreReference().collection(AppConstant.DATA)
-                .whereEqualTo(AppConstant.CATEGORY, catId);
+                .whereEqualTo(AppConstant.CATEGORY, catId)
+                .orderBy(AppConstant.TIMESTAMP, Query.Direction.DESCENDING);
+
 
         PagedList.Config config = new PagedList.Config.Builder()
                 .setInitialLoadSizeHint(10)
@@ -81,6 +100,7 @@ public class DataFragment extends Fragment {
         FirestorePagingOptions<CategoryModel> options = new FirestorePagingOptions.Builder<CategoryModel>()
                 .setLifecycleOwner(requireActivity())
                 .setQuery(query, config, snapshot -> {
+                    Log.d(TAG, "setAdapter: " + snapshot);
                     CategoryModel categoryModel = snapshot.toObject(CategoryModel.class);
                     if (null != categoryModel)
                         categoryModel.setId(snapshot.getId());
@@ -89,13 +109,15 @@ public class DataFragment extends Fragment {
                 .build();
 
 
+        AppUtils.hideDialog();
+
         //creating Adapter
         adapter = new FirestorePagingAdapter<CategoryModel, CategoryViewHolder>(options) {
             @NonNull
             @Override
             public CategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-                ShayariViewBinding binding = ShayariViewBinding.inflate(layoutInflater, parent, false);
+                ShayariView2Binding binding = ShayariView2Binding.inflate(layoutInflater, parent, false);
                 binding.setDataInterface(dataPageInterface);
                 return new CategoryViewHolder(binding);
             }
@@ -145,6 +167,11 @@ public class DataFragment extends Fragment {
                             break;
                         }
                     }
+
+                if (position % 2 == 0)
+                    holder.binding.getRoot().setBackgroundColor(getResources().getColor(R.color.colorGray));
+                else
+                    holder.binding.getRoot().setBackgroundColor(getResources().getColor(R.color.white));
 
             }
 
@@ -226,16 +253,11 @@ public class DataFragment extends Fragment {
         @Override
         public void onShareBtnClicked(Object obj) {
             CategoryModel categoryModel = (CategoryModel) obj;
-            /*Create an ACTION_SEND Intent*/
             Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-            /*This will be the actual content you wish you share.*/
             String shareBody = categoryModel.getMsg();
-            /*The type of the content is text, obviously.*/
             intent.setType("text/plain");
-            /*Applying information Subject and Body.*/
             intent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
             intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-            /*Fire!*/
             startActivity(Intent.createChooser(intent, getString(R.string.share_using)));
         }
 
@@ -277,6 +299,16 @@ public class DataFragment extends Fragment {
                     .document(id)
                     .update(getLikeUpdateMap(AppConstant.INCREMENT.equals((String) obj)));
 
+        }
+
+        @Override
+        public void onCopyBtnClicked(Object obj) {
+            CategoryModel msgModel = (CategoryModel) obj;
+            ClipboardManager clipboard = (ClipboardManager) requireActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("label", msgModel.getMsg());
+            if (clipboard == null || clip == null) return;
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(requireActivity(), "copied !!", Toast.LENGTH_SHORT).show();
         }
     };
 

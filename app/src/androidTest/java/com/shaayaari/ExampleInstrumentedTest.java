@@ -1,4 +1,4 @@
-package com.shayari;
+package com.shaayaari;
 
 import android.content.Context;
 

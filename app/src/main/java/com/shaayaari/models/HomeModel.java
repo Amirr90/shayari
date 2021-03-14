@@ -1,4 +1,4 @@
-package com.shayari.models;
+package com.shaayaari.models;
 
 public class HomeModel {
     String title;

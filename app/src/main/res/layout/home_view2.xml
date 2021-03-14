@@ -5,7 +5,7 @@
 
     <data>
 
-        <import type="com.shayari.utils.AppConstant" />
+        <import type="com.shaayaari.utils.AppConstant" />
 
         <variable
             name="home"

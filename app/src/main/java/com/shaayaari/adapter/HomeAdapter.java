@@ -1,15 +1,14 @@
-package com.shayari.adapter;
+package com.shaayaari.adapter;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.shayari.databinding.HomeViewBinding;
-import com.shayari.interfaces.AdapterInterface;
+import com.shaayaari.databinding.HomeView2Binding;
+import com.shaayaari.interfaces.AdapterInterface;
 
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeVH> {
     @Override
     public HomeVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        HomeViewBinding binding = HomeViewBinding.inflate(inflater, parent, false);
+        HomeView2Binding binding = HomeView2Binding.inflate(inflater, parent, false);
         return new HomeVH(binding);
     }
 
@@ -43,9 +42,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeVH> {
     }
 
     public static class HomeVH extends RecyclerView.ViewHolder {
-        HomeViewBinding binding;
+        HomeView2Binding binding;
 
-        public HomeVH(@NonNull HomeViewBinding binding) {
+        public HomeVH(@NonNull HomeView2Binding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }

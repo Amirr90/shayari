@@ -1,4 +1,6 @@
-package com.shayari;
+package com.shaayaari;
+
+import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
@@ -6,10 +8,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
-import android.os.Bundle;
+import com.shaayaari.databinding.ActivityHomeScreenBinding;
 
-import com.shayari.adapter.HomeAdapter;
-import com.shayari.databinding.ActivityHomeScreenBinding;
 
 public class HomeScreen extends AppCompatActivity {
 

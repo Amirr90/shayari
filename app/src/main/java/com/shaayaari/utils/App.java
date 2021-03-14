@@ -1,4 +1,4 @@
-package com.shayari.utils;
+package com.shaayaari.utils;
 
 import android.app.Application;
 import android.content.Context;

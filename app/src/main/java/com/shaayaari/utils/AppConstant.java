@@ -1,11 +1,8 @@
-package com.shayari.utils;
-
-import java.util.Map;
+package com.shaayaari.utils;
 
 public class AppConstant {
     public static final String CATEGORY = "category";
     public static final String IMAGE = "image";
-    public static final String TITLE = "title";
     public static final String MSG = "msg";
     public static final String DATA = "data";
     public static final String INCREMENT = "increment";
@@ -14,4 +11,11 @@ public class AppConstant {
     public static final String FAVOURITE = "favourite";
     public static final String FAVOURITE_IDS = "favouriteIds";
     public static final String LIKE_IDS = "likeIds";
+    public static final String TIMESTAMP = "timestamp";
+    public static final String ADDED_BY = "addedBy";
+    public static final String STATUS = "status";
+    public static final String PENDING = "pending";
+    public static final String REJECT = "reject";
+    public static final String APPROVED = "approved";
+    public static final String ADMIN_ID = "AGYXzWBqSUPB7GlxrrEmhNZazTr2";
 }

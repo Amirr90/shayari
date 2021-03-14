@@ -1,4 +1,4 @@
-package com.shayari.views;
+package com.shaayaari.views;
 
 import android.os.Bundle;
 
@@ -14,17 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firestore.v1.Document;
-import com.shayari.R;
-import com.shayari.adapter.HomeAdapter;
-import com.shayari.databinding.FragmentDashboardBinding;
-import com.shayari.interfaces.AdapterInterface;
-import com.shayari.utils.AppConstant;
-import com.shayari.utils.AppUtils;
+import com.shaayaari.adapter.HomeAdapter;
+import com.shaayaari.databinding.FragmentDashboardBinding;
+import com.shaayaari.interfaces.AdapterInterface;
+import com.shaayaari.utils.AppConstant;
+import com.shaayaari.utils.AppUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -61,7 +56,9 @@ public class DashboardFragment extends Fragment implements AdapterInterface {
     }
 
     private void loadCategoryData() {
+        AppUtils.showRequestDialog(requireActivity());
         AppUtils.getFireStoreReference().collection(AppConstant.CATEGORY).get().addOnSuccessListener(queryDocumentSnapshots -> {
+            AppUtils.hideDialog();
             snapshots.clear();
             if (null == queryDocumentSnapshots || queryDocumentSnapshots.isEmpty())
                 return;
@@ -70,6 +67,7 @@ public class DashboardFragment extends Fragment implements AdapterInterface {
         }).addOnFailureListener(e -> {
             Toast.makeText(requireActivity(), "try again !!", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "onFailure: " + e.getLocalizedMessage());
+            AppUtils.hideDialog();
         });
     }
 

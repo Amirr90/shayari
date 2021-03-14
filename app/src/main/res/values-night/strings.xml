@@ -3,4 +3,9 @@
     <string name="share_subject">sharing via ShayariApp</string>
     <string name="share_using">share using</string>
     <string name="favourite">Favourite</string>
+    <string name="share">Share</string>
+    <string name="copy">Copy</string>
+    <string name="add_data">Add Data</string>
+    <string name="add">Add</string>
+    <string name="msg_here">Msg Here</string>
 </resources>

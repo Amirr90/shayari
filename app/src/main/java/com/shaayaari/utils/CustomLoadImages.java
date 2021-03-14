@@ -1,4 +1,4 @@
-package com.shayari.utils;
+package com.shaayaari.utils;
 
 import android.util.Log;
 import android.widget.ImageView;
@@ -6,7 +6,7 @@ import android.widget.ImageView;
 import androidx.databinding.BindingAdapter;
 
 import com.bumptech.glide.Glide;
-import com.shayari.R;
+import com.shaayaari.R;
 
 public class CustomLoadImages {
     private static final String TAG = "CustomLoadImages";

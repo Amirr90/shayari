@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/dashboardFragment"
-        android:name="com.shayari.views.DashboardFragment"
+        android:name="com.shaayaari.views.DashboardFragment"
         android:label="Shayari"
-        tools:layout="@layout/fragment_dashboard" >
+        tools:layout="@layout/fragment_dashboard">
         <action
             android:id="@+id/action_dashboardFragment_to_dataFragment"
             app:destination="@id/dataFragment"
@@ -20,10 +20,27 @@
     </fragment>
     <fragment
         android:id="@+id/dataFragment"
-        android:name="com.shayari.DataFragment"
+        android:name="com.shaayaari.DataFragment"
         tools:layout="@layout/fragment_data">
         <argument
             android:name="id"
+            android:defaultValue="0"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_dataFragment_to_addDataFragment"
+            app:destination="@id/addDataFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
+    </fragment>
+    <fragment
+        android:id="@+id/addDataFragment"
+        android:name="com.shaayaari.AddDataFragment"
+        android:label="Add Msg"
+        tools:layout="@layout/fragment_add_data">
+        <argument
+            android:name="catId"
             android:defaultValue="0"
             app:argType="string" />
     </fragment>

@@ -15,6 +15,6 @@
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="3"
         tools:itemCount="24"
-        tools:listitem="@layout/home_view" />
+        tools:listitem="@layout/home_view2" />
 
 </FrameLayout>

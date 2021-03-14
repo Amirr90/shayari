@@ -1,4 +1,4 @@
-package com.shayari.models;
+package com.shaayaari.models;
 
 import java.util.List;
 
