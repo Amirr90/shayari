@@ -50,7 +50,7 @@
             android:layout_marginRight="4dp"
             android:fontFamily="@font/poppins"
             android:gravity="center"
-            android:text="@{home.id}"
+            android:text="@{home.getString(AppConstant.TITLE)}"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textSize="16sp"
             android:textStyle="bold"

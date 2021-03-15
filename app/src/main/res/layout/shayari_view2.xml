@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="dataInterface"
             type="com.shaayaari.interfaces.DataPageInterface" />
@@ -26,26 +28,44 @@
         android:focusable="true">
 
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="8dp"
-            android:fontFamily="@font/poppins"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="@{data.msg}"
-            android:textColor="@color/TextPrimaryColor"
-            android:textSize="20sp"
-            android:textStyle="normal"
-            app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:loadCustomImage="@{data.image}"
+                android:src="@drawable/ic_launcher_foreground"
+                android:visibility="@{data.image==null?View.GONE:View.VISIBLE}"
+                app:layout_constraintBottom_toTopOf="@+id/textView2"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="@{data.msg}"
+                android:textColor="@color/TextPrimaryColor"
+                android:textSize="20sp"
+                android:textStyle="normal"
+                android:visibility="@{data.msg==null?View.GONE:data.msg.isEmpty()?View.GONE:View.VISIBLE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.473"
+                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
@@ -54,8 +74,9 @@
             android:background="@color/teal_200"
             android:paddingBottom="5dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView2">
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
 
             <CheckBox
                 android:id="@+id/btnFavourite"
@@ -63,6 +84,7 @@
                 android:layout_height="30dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:button="@drawable/favourite_btn_change"
+                android:checked="@{data.favourite}"
                 android:clickable="true"
                 android:focusable="true"
                 android:scaleType="fitXY"

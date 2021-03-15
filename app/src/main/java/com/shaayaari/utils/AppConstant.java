@@ -21,4 +21,5 @@ public class AppConstant {
     public static final String ADMIN_ID = "AGYXzWBqSUPB7GlxrrEmhNZazTr2";
     public static final String ID = "id";
     public static final String MSG_ID = "msgId";
+    public static final String TITLE = "title";
 }

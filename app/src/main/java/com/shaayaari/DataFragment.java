@@ -4,7 +4,11 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -26,11 +31,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.shaayaari.databinding.FragmentDataBinding;
 import com.shaayaari.databinding.ShayariView2Binding;
 import com.shaayaari.interfaces.DataPageInterface;
@@ -38,15 +39,17 @@ import com.shaayaari.models.CategoryModel;
 import com.shaayaari.utils.App;
 import com.shaayaari.utils.AppConstant;
 import com.shaayaari.utils.AppUtils;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Objects;
 
 import static com.shaayaari.utils.AppUtils.getFavouriteMap;
-import static com.shaayaari.utils.AppUtils.getFireStoreReference;
 import static com.shaayaari.utils.AppUtils.getLikeUpdateMap;
 import static com.shaayaari.utils.AppUtils.getUid;
 import static com.shaayaari.utils.AppUtils.updateFavouriteIds;
@@ -97,12 +100,11 @@ public class DataFragment extends Fragment {
 
 
         PagedList.Config config = new PagedList.Config.Builder()
-                .setInitialLoadSizeHint(10)
+                .setInitialLoadSizeHint(5)
                 .setPageSize(3)
                 .build();
         FirestorePagingOptions<CategoryModel> options = new FirestorePagingOptions.Builder<CategoryModel>()
                 .setQuery(query, config, snapshot -> {
-                    Log.d(TAG, "setAdapter: " + snapshot);
                     CategoryModel categoryModel = snapshot.toObject(CategoryModel.class);
                     if (null != categoryModel) {
                         categoryModel.setId(snapshot.getId());
@@ -255,12 +257,17 @@ public class DataFragment extends Fragment {
         @Override
         public void onShareBtnClicked(Object obj) {
             CategoryModel categoryModel = (CategoryModel) obj;
-            Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-            String shareBody = categoryModel.getMsg();
-            intent.setType("text/plain");
-            intent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
-            intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-            startActivity(Intent.createChooser(intent, getString(R.string.share_using)));
+            if (null != categoryModel.getImage() && !categoryModel.getImage().isEmpty()) {
+                shareImage(categoryModel.getImage());
+            } else {
+                Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                String shareBody = categoryModel.getMsg();
+                intent.setType("text/plain");
+                intent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
+                intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                startActivity(Intent.createChooser(intent, getString(R.string.share_using)));
+            }
+
         }
 
         @Override
@@ -314,5 +321,43 @@ public class DataFragment extends Fragment {
         }
     };
 
+    public void shareImage(String url) {
+        Picasso.get().load(url).into(new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("image/*");
+                i.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(bitmap));
+                startActivity(Intent.createChooser(i, "Share Image"));
+            }
 
+            @Override
+            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+            }
+        });
+    }
+
+    public Uri getLocalBitmapUri(Bitmap bmp) {
+        Uri bmpUri = null;
+        try {
+            File file = new File(requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+            FileOutputStream out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.close();
+            //bmpUri = Uri.fromFile(file);
+
+            bmpUri = FileProvider.getUriForFile(
+                    requireActivity(),
+                    "com.shaayaari.provider", //(use your app signature + ".provider" )
+                    file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bmpUri;
+    }
 }

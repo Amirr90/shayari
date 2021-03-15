@@ -16,7 +16,7 @@ public class HomeScreen extends AppCompatActivity {
     ActivityHomeScreenBinding binding;
     NavController navController;
 
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

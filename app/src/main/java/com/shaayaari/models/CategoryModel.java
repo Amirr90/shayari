@@ -11,6 +11,13 @@ public class CategoryModel {
     List<String> favouriteIds;
     Boolean Like;
     Boolean Favourite;
+    String image;
+
+    public String getImage() {
+        return image;
+    }
+
+
 
     public String getMsgId() {
         return msgId;
