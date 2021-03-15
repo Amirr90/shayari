@@ -17,6 +17,13 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/fade_out" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_favouriteMsgFragment"
+            app:destination="@id/favouriteMsgFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
     </fragment>
     <fragment
         android:id="@+id/dataFragment"
@@ -44,4 +51,9 @@
             android:defaultValue="0"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/favouriteMsgFragment"
+        android:name="com.shaayaari.FavouriteMsgFragment"
+        android:label="Favourite"
+        tools:layout="@layout/fragment_favourite_msg" />
 </navigation>

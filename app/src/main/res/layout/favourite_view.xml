@@ -115,7 +115,6 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:button="@drawable/radio_like_layout"
-                android:checked="@{data.like}"
                 app:buttonTint="@color/purple_200"
                 app:layout_constraintBottom_toBottomOf="@+id/btnShare"
                 app:layout_constraintEnd_toEndOf="parent"

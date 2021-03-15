@@ -27,42 +27,35 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.shaayaari.databinding.FragmentDataBinding;
+import com.shaayaari.databinding.FragmentFavouriteMsgBinding;
 import com.shaayaari.databinding.ShayariView2Binding;
 import com.shaayaari.interfaces.DataPageInterface;
 import com.shaayaari.models.CategoryModel;
-import com.shaayaari.utils.App;
 import com.shaayaari.utils.AppConstant;
 import com.shaayaari.utils.AppUtils;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
 import static com.shaayaari.utils.AppUtils.getFavouriteMap;
-import static com.shaayaari.utils.AppUtils.getFireStoreReference;
 import static com.shaayaari.utils.AppUtils.getLikeUpdateMap;
 import static com.shaayaari.utils.AppUtils.getUid;
 import static com.shaayaari.utils.AppUtils.updateFavouriteIds;
 
+public class FavouriteMsgFragment extends Fragment {
+    private static final String TAG = "FavouriteMsgFragment";
 
-public class DataFragment extends Fragment {
-    private static final String TAG = "DataFragment";
-    FragmentDataBinding binding;
+    FragmentFavouriteMsgBinding binding;
     NavController navController;
     FirestorePagingAdapter adapter;
-    String catId;
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentDataBinding.inflate(getLayoutInflater());
+        binding = FragmentFavouriteMsgBinding.inflate(getLayoutInflater());
         initAds();
         return binding.getRoot();
     }
@@ -70,51 +63,35 @@ public class DataFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         navController = Navigation.findNavController(view);
-        if (null != getArguments()) {
-            catId = DataFragmentArgs.fromBundle(getArguments()).getId();
-        }
 
-        Objects.requireNonNull(navController.getCurrentDestination()).setLabel(catId);
         setAdapter();
-
-        binding.btnAddData.setOnClickListener(v -> {
-            DataFragmentDirections.ActionDataFragmentToAddDataFragment action = DataFragmentDirections.actionDataFragmentToAddDataFragment();
-            action.setCatId(catId);
-            navController.navigate(action);
-        });
-
-        binding.btnAddData.setVisibility(AppConstant.ADMIN_ID.equals(AppUtils.getUid()) ? View.VISIBLE : View.GONE);
-
     }
 
     private void setAdapter() {
 
         AppUtils.showRequestDialog(requireActivity());
-        Query query = AppUtils.getFireStoreReference().collection(AppConstant.DATA)
-                .whereEqualTo(AppConstant.CATEGORY, catId)
+        if (null == getUid())
+            return;
+
+        Query query = AppUtils.getFireStoreReference().collection(AppConstant.FAVOURITE)
+                .document(getUid())
+                .collection(AppConstant.FAVOURITE)
                 .orderBy(AppConstant.TIMESTAMP, Query.Direction.DESCENDING);
 
 
         PagedList.Config config = new PagedList.Config.Builder()
                 .setInitialLoadSizeHint(10)
-                .setPageSize(3)
+                .setPageSize(2)
                 .build();
+
         FirestorePagingOptions<CategoryModel> options = new FirestorePagingOptions.Builder<CategoryModel>()
                 .setQuery(query, config, snapshot -> {
                     Log.d(TAG, "setAdapter: " + snapshot);
                     CategoryModel categoryModel = snapshot.toObject(CategoryModel.class);
                     if (null != categoryModel) {
                         categoryModel.setId(snapshot.getId());
-
-                        //setting likes
-                        for (String likes : categoryModel.getLikeIds()) {
-                            categoryModel.setLike(likes.equals(getUid()));
-                        }
-                        //setting favourite
-                        for (String favourite : categoryModel.getFavouriteIds()) {
-                            categoryModel.setFavourite(favourite.equals(getUid()));
-                        }
                     }
                     return categoryModel;
                 })
@@ -137,30 +114,20 @@ public class DataFragment extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull CategoryViewHolder holder, int position, @NonNull CategoryModel model) {
                 holder.binding.setData(model);
-                holder.binding.btnFavourite.setChecked(model.getFavourite());
-                holder.binding.btnLikes.setOnClickListener(v -> {
-                    int likes = Integer.parseInt(holder.binding.textView6.getText().toString());
-                    String id = model.getId();
-                    if (holder.binding.btnLikes.isChecked()) {
-                        likes = likes + 1;
-                    } else {
-                        likes = likes - 1;
-                    }
-
-                    dataPageInterface.onLikeClicked(holder.binding.btnLikes.isChecked() ? AppConstant.INCREMENT : AppConstant.DECREMENT, id);
-                    holder.binding.textView6.setText(String.valueOf(likes));
-                });
-                holder.binding.btnFavourite.setOnClickListener(v -> {
-                    dataPageInterface.onFavouriteBtnClicked(model, holder.binding.btnFavourite.isChecked());
-
-                });
                 setBannerAdd(holder.binding.adView);
 
+                holder.binding.btnFavourite.setChecked(true);
+
+                holder.binding.btnLikes.setVisibility(View.GONE);
+                holder.binding.textView6.setVisibility(View.GONE);
+
+                holder.binding.btnFavourite.setOnClickListener(v -> dataPageInterface.onFavouriteBtnClicked(model, holder.binding.btnFavourite.isChecked()));
 
                 if (position % 2 == 0)
                     holder.binding.getRoot().setBackgroundColor(getResources().getColor(R.color.colorGray));
                 else
                     holder.binding.getRoot().setBackgroundColor(getResources().getColor(R.color.white));
+
 
             }
 
@@ -180,6 +147,8 @@ public class DataFragment extends Fragment {
                     break;
                     case LOADED: {
                         Log.d(TAG, "onLoadingStateChanged: LOADED " + getItemCount());
+                        binding.tvNoFavMsg.setVisibility(getItemCount() == 0 ? View.VISIBLE : View.GONE);
+                        binding.recShayariList.setVisibility(adapter.getItemCount() != 0 ? View.VISIBLE : View.GONE);
                     }
                     case LOADING_MORE: {
                         Log.d(TAG, "onLoadingStateChanged: LOADING_MORE");
@@ -192,24 +161,66 @@ public class DataFragment extends Fragment {
             }
         };
 
-
         binding.recShayariList.setHasFixedSize(true);
         binding.recShayariList.setAdapter(adapter);
+        binding.recShayariList.setAnimation(AppUtils.fadeIn(requireActivity()));
 
     }
 
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        adapter.stopListening();
-    }
+    DataPageInterface dataPageInterface = new DataPageInterface() {
+        @Override
+        public void onShareBtnClicked(Object obj) {
+            CategoryModel categoryModel = (CategoryModel) obj;
+            Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+            String shareBody = categoryModel.getMsg();
+            intent.setType("text/plain");
+            intent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
+            intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+            startActivity(Intent.createChooser(intent, getString(R.string.share_using)));
+        }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        adapter.startListening();
-    }
+        @Override
+        public void onFavouriteBtnClicked(Object model, Object var) {
+            CategoryModel msgModel = (CategoryModel) model;
+            String id = msgModel.getId();
+            Log.d(TAG, "favId: " + id);
+            Log.d(TAG, "MSGId: " + msgModel.getMsgId());
+
+            if (null != getUid())
+                AppUtils.getFireStoreReference().collection(AppConstant.FAVOURITE)
+                        .document(getUid())
+                        .collection(AppConstant.FAVOURITE)
+                        .document(msgModel.getId())
+                        .delete()
+                        .addOnSuccessListener(aVoid -> {
+                            updateFavouriteIds(false, id);
+                        })
+                        .addOnFailureListener(e -> Toast.makeText(requireActivity(), "try again !!", Toast.LENGTH_SHORT).show());
+
+            adapter.refresh();
+
+        }
+
+        @Override
+        public void onLikeClicked(Object obj, String id) {
+            AppUtils.getFireStoreReference()
+                    .collection(AppConstant.DATA)
+                    .document(id)
+                    .update(getLikeUpdateMap(AppConstant.INCREMENT.equals((String) obj)));
+
+        }
+
+        @Override
+        public void onCopyBtnClicked(Object obj) {
+            CategoryModel msgModel = (CategoryModel) obj;
+            ClipboardManager clipboard = (ClipboardManager) requireActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("label", msgModel.getMsg());
+            if (clipboard == null || clip == null) return;
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(requireActivity(), "copied !!", Toast.LENGTH_SHORT).show();
+        }
+    };
 
     private void setBannerAdd(AdView adView) {
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -251,68 +262,15 @@ public class DataFragment extends Fragment {
         MobileAds.initialize(requireActivity(), initializationStatus -> Log.d(TAG, "onInitializationComplete: " + initializationStatus));
     }
 
-    DataPageInterface dataPageInterface = new DataPageInterface() {
-        @Override
-        public void onShareBtnClicked(Object obj) {
-            CategoryModel categoryModel = (CategoryModel) obj;
-            Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-            String shareBody = categoryModel.getMsg();
-            intent.setType("text/plain");
-            intent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
-            intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-            startActivity(Intent.createChooser(intent, getString(R.string.share_using)));
-        }
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
 
-        @Override
-        public void onFavouriteBtnClicked(Object model, Object var) {
-            CategoryModel msgModel = (CategoryModel) model;
-            String id = msgModel.getId();
-
-            if ((boolean) var) {
-                if (null != getUid())
-                    AppUtils.getFireStoreReference().collection(AppConstant.FAVOURITE)
-                            .document(getUid())
-                            .collection(AppConstant.FAVOURITE)
-                            .document(msgModel.getId()).set(getFavouriteMap(msgModel))
-                            .addOnSuccessListener(aVoid -> {
-                                updateFavouriteIds((boolean) var, id);
-                            })
-                            .addOnFailureListener(e -> Toast.makeText(requireActivity(), "try again !!", Toast.LENGTH_SHORT).show());
-            } else {
-                if (null != getUid())
-                    AppUtils.getFireStoreReference().collection(AppConstant.FAVOURITE)
-                            .document(getUid())
-                            .collection(AppConstant.FAVOURITE)
-                            .document(msgModel.getId())
-                            .delete()
-                            .addOnSuccessListener(aVoid -> {
-
-                                updateFavouriteIds((boolean) var, id);
-                            })
-                            .addOnFailureListener(e -> Toast.makeText(requireActivity(), "try again !!", Toast.LENGTH_SHORT).show());
-            }
-
-        }
-
-        @Override
-        public void onLikeClicked(Object obj, String id) {
-            AppUtils.getFireStoreReference()
-                    .collection(AppConstant.DATA)
-                    .document(id)
-                    .update(getLikeUpdateMap(AppConstant.INCREMENT.equals((String) obj)));
-
-        }
-
-        @Override
-        public void onCopyBtnClicked(Object obj) {
-            CategoryModel msgModel = (CategoryModel) obj;
-            ClipboardManager clipboard = (ClipboardManager) requireActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("label", msgModel.getMsg());
-            if (clipboard == null || clip == null) return;
-            clipboard.setPrimaryClip(clip);
-            Toast.makeText(requireActivity(), "copied !!", Toast.LENGTH_SHORT).show();
-        }
-    };
-
-
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
 }

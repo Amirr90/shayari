@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.shaayaari.R;
 import com.shaayaari.adapter.HomeAdapter;
 import com.shaayaari.databinding.FragmentDashboardBinding;
 import com.shaayaari.interfaces.AdapterInterface;
@@ -50,7 +51,7 @@ public class DashboardFragment extends Fragment implements AdapterInterface {
         navController = Navigation.findNavController(view);
 
         snapshots = new ArrayList<>();
-        adapter = new HomeAdapter(snapshots,this);
+        adapter = new HomeAdapter(snapshots, this);
         dashboardBinding.recHome.setAdapter(adapter);
         loadCategoryData();
     }
@@ -73,8 +74,18 @@ public class DashboardFragment extends Fragment implements AdapterInterface {
 
     @Override
     public void onItemClicked(Object o) {
-        DashboardFragmentDirections.ActionDashboardFragmentToDataFragment action = DashboardFragmentDirections.actionDashboardFragmentToDataFragment();
-        action.setId((String) o);
-        navController.navigate(action);
+        String id = (String) o;
+        switch (id) {
+            case AppConstant.FAVOURITE_ID:
+                navController.navigate(R.id.action_dashboardFragment_to_favouriteMsgFragment);
+                break;
+            default: {
+                DashboardFragmentDirections.ActionDashboardFragmentToDataFragment action = DashboardFragmentDirections.actionDashboardFragmentToDataFragment();
+                action.setId(id);
+                navController.navigate(action);
+            }
+        }
+
+
     }
 }

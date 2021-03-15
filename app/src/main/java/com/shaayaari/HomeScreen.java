@@ -16,13 +16,11 @@ public class HomeScreen extends AppCompatActivity {
     ActivityHomeScreenBinding binding;
     NavController navController;
 
-
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home_screen);
-
     }
 
     @Override
@@ -31,6 +29,7 @@ public class HomeScreen extends AppCompatActivity {
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController);
     }
+
 
     @Override
     public boolean onSupportNavigateUp() {

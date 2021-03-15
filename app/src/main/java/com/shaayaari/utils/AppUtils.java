@@ -5,23 +5,101 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.graphics.drawable.ColorDrawable;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.shaayaari.R;
+import com.shaayaari.models.CategoryModel;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 public class AppUtils {
+    private static final String TAG = "AppUtils";
+
     static ProgressDialog progressDialog;
+
+
+    public static Animation fadeIn(Activity activity) {
+        return AnimationUtils.loadAnimation(activity, R.anim.fade_in);
+    }
+
+    public static Animation fadeOut(Activity activity) {
+        return AnimationUtils.loadAnimation(activity, R.anim.fade_out);
+    }
+
+    public static void updateFavouriteIds(boolean var, Object model) {
+        Log.d(TAG, "updateFavouriteIds: " + (String) model);
+        if (var) {
+            AppUtils.getFireStoreReference().collection(AppConstant.DATA)
+                    .document((String) model)
+                    .update(AppConstant.FAVOURITE_IDS, FieldValue.arrayUnion(getUid()));
+            Toast.makeText(App.context, "Added as favourite !!", Toast.LENGTH_SHORT).show();
+        } else {
+            AppUtils.getFireStoreReference().collection(AppConstant.DATA)
+                    .document((String) model)
+                    .update(AppConstant.FAVOURITE_IDS, FieldValue.arrayRemove(getUid()));
+            Toast.makeText(App.context, "Removed From Favourite !!", Toast.LENGTH_SHORT).show();
+
+        }
+    }
+
+    public static Map<String, Object> getFavouriteMap(CategoryModel msgModel) {
+        Map<String, Object> map = new HashMap<>();
+        map.put(AppConstant.MSG, msgModel.getMsg());
+        map.put(AppConstant.ID, getUid());
+        map.put(AppConstant.MSG_ID, msgModel.getId());
+        map.put(AppConstant.TIMESTAMP, System.currentTimeMillis());
+        return map;
+    }
+
+    public static Map<String, Object> getLikeUpdateMap(boolean status) {
+        Map<String, Object> map = new HashMap<>();
+        map.put(AppConstant.LIKES, status ? FieldValue.increment(1) : FieldValue.increment(-1));
+        map.put(AppConstant.LIKE_IDS, status ? FieldValue.arrayUnion(getUid()) : FieldValue.arrayRemove(getUid()));
+        return map;
+
+    }
+
+    public static String getCountInRomanFormat(Number number) {
+        char[] suffix = {' ', 'k', 'M', 'B', 'T', 'P', 'E'};
+        long numValue = number.longValue();
+        int value = (int) Math.floor(Math.log10(numValue));
+        int base = value / 3;
+        if (value >= 3 && base < suffix.length) {
+            return new DecimalFormat("#0.0").format(numValue / Math.pow(10, base * 3)) + suffix[base];
+        } else {
+            return new DecimalFormat("#,##0").format(numValue);
+        }
+    }
+
+    public static String getCountInRomanFormat(String num) {
+        Number number = Integer.parseInt(num);
+        char[] suffix = {' ', 'k', 'M', 'B', 'T', 'P', 'E'};
+        long numValue = number.longValue();
+        int value = (int) Math.floor(Math.log10(numValue));
+        int base = value / 3;
+        if (value >= 3 && base < suffix.length) {
+            return new DecimalFormat("#0.0").format(numValue / Math.pow(10, base * 3)) + suffix[base];
+        } else {
+            return new DecimalFormat("#,##0").format(numValue);
+        }
+    }
 
     public static FirebaseFirestore getFireStoreReference() {
         return FirebaseFirestore.getInstance();

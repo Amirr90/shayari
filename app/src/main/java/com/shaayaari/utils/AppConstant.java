@@ -9,6 +9,7 @@ public class AppConstant {
     public static final String DECREMENT = "decrement";
     public static final String LIKES = "likes";
     public static final String FAVOURITE = "favourite";
+    public static final String FAVOURITE_ID = "Favourite";
     public static final String FAVOURITE_IDS = "favouriteIds";
     public static final String LIKE_IDS = "likeIds";
     public static final String TIMESTAMP = "timestamp";
@@ -18,4 +19,6 @@ public class AppConstant {
     public static final String REJECT = "reject";
     public static final String APPROVED = "approved";
     public static final String ADMIN_ID = "AGYXzWBqSUPB7GlxrrEmhNZazTr2";
+    public static final String ID = "id";
+    public static final String MSG_ID = "msgId";
 }
