@@ -1,5 +1,7 @@
 package com.shaayaari;
 
+import android.annotation.SuppressLint;
+import android.app.DownloadManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -23,6 +25,9 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.paging.PagedList;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.DownloadListener;
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.firebase.ui.firestore.paging.LoadingState;
@@ -52,6 +57,7 @@ import java.util.Objects;
 import static com.shaayaari.utils.AppUtils.getFavouriteMap;
 import static com.shaayaari.utils.AppUtils.getLikeUpdateMap;
 import static com.shaayaari.utils.AppUtils.getUid;
+import static com.shaayaari.utils.AppUtils.hideDialog;
 import static com.shaayaari.utils.AppUtils.updateFavouriteIds;
 
 
@@ -136,10 +142,19 @@ public class DataFragment extends Fragment {
                 return new CategoryViewHolder(binding);
             }
 
+            @SuppressLint("UseCompatLoadingForDrawables")
             @Override
             protected void onBindViewHolder(@NonNull CategoryViewHolder holder, int position, @NonNull CategoryModel model) {
                 holder.binding.setData(model);
                 holder.binding.btnFavourite.setChecked(model.getFavourite());
+                if (null != model.getImage() && !model.getImage().isEmpty()) {
+                    holder.binding.imageView2.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_arrow_downward_24));
+                    holder.binding.textView3.setText(getString(R.string.download));
+                } else {
+                    holder.binding.textView3.setText(getString(R.string.copy));
+                    holder.binding.imageView2.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_content_copy_24));
+
+                }
                 holder.binding.btnLikes.setOnClickListener(v -> {
                     int likes = Integer.parseInt(holder.binding.textView6.getText().toString());
                     String id = model.getId();
@@ -258,7 +273,8 @@ public class DataFragment extends Fragment {
         public void onShareBtnClicked(Object obj) {
             CategoryModel categoryModel = (CategoryModel) obj;
             if (null != categoryModel.getImage() && !categoryModel.getImage().isEmpty()) {
-                shareImage(categoryModel.getImage());
+                AppUtils.showRequestDialog(requireActivity());
+                shareImage(categoryModel.getImage(), catId);
             } else {
                 Intent intent = new Intent(android.content.Intent.ACTION_SEND);
                 String shareBody = categoryModel.getMsg();
@@ -312,40 +328,64 @@ public class DataFragment extends Fragment {
 
         @Override
         public void onCopyBtnClicked(Object obj) {
+
             CategoryModel msgModel = (CategoryModel) obj;
-            ClipboardManager clipboard = (ClipboardManager) requireActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("label", msgModel.getMsg());
-            if (clipboard == null || clip == null) return;
-            clipboard.setPrimaryClip(clip);
-            Toast.makeText(requireActivity(), "copied !!", Toast.LENGTH_SHORT).show();
+            if (null != msgModel.getImage() && !msgModel.getImage().isEmpty()) {
+                downloadImage(msgModel.getImage());
+            } else {
+                ClipboardManager clipboard = (ClipboardManager) requireActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("label", msgModel.getMsg());
+                if (clipboard == null || clip == null) return;
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(requireActivity(), "copied !!", Toast.LENGTH_SHORT).show();
+            }
         }
     };
 
-    public void shareImage(String url) {
+    private void downloadImage(String url) {
+        //Download Image
+        DownloadManager downloadManager = (DownloadManager) App.context.getSystemService(Context.DOWNLOAD_SERVICE);
+        Uri uri = Uri.parse(url);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        downloadManager.enqueue(request);
+
+        //opening Image
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setDataAndType(uri, "image/*");
+        startActivity(intent);
+
+    }
+
+    public void shareImage(String url, String imageName) {
         Picasso.get().load(url).into(new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 Intent i = new Intent(Intent.ACTION_SEND);
                 i.setType("image/*");
-                i.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(bitmap));
+                i.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(bitmap, imageName));
+                AppUtils.hideDialog();
                 startActivity(Intent.createChooser(i, "Share Image"));
             }
 
             @Override
             public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-
+                AppUtils.hideDialog();
+                Toast.makeText(requireActivity(), "failed to share image, try again !!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {
+
             }
         });
     }
 
-    public Uri getLocalBitmapUri(Bitmap bmp) {
+    public Uri getLocalBitmapUri(Bitmap bmp, String imageName) {
         Uri bmpUri = null;
         try {
-            File file = new File(requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+            File file = new File(requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES), imageName + "_" + System.currentTimeMillis() + ".png");
             FileOutputStream out = new FileOutputStream(file);
             bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
             out.close();
