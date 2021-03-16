@@ -3,13 +3,14 @@
 
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:color="?android:colorControlHighlight"
+    android:color="@color/purple_200"
     tools:targetApi="lollipop">
     <item>
-        <shape xmlns:android="http://schemas.android.com/apk/res/android"
-            android:shape="rectangle">
-            <corners android:radius="10dp" />
-            <solid android:color="@color/teal_700" />
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="1dp"
+                android:color="@color/colorGray" />
+            <corners android:radius="5dp" />
         </shape>
     </item>
 </ripple>
