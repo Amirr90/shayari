@@ -12,4 +12,7 @@
     <string name="msg_here">Msg Here</string>
     <string name="no_favourite_message">No Favourite Message !!</string>
     <string name="download">Download</string>
+    <string name="default_notification_channel_id">com.shaayaari</string>
+    <string name="msg_subscribed">subscribe</string>
+    <string name="msg_subscribe_failed">subscribing failed</string>
 </resources>

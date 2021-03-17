@@ -19,9 +19,9 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_margin="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
         android:background="@drawable/round_for_data"
         android:clickable="true"
         android:focusable="true">
@@ -36,10 +36,10 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
+                android:layout_margin="1dp"
                 android:id="@+id/imageView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_margin="1dp"
                 android:loadCustomImage="@{data.image}"
                 android:src="@drawable/ic_launcher_foreground"
                 android:visibility="@{data.image==null?View.GONE:View.VISIBLE}"
@@ -53,7 +53,6 @@
                 android:id="@+id/textView2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="1dp"
                 android:fontFamily="@font/poppins"
                 android:gravity="center"
                 android:padding="10dp"
@@ -69,6 +68,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+
             android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -207,26 +207,18 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!--        <com.google.android.gms.ads.AdView
-                    android:id="@+id/adView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    app:adSize="BANNER"
-                    app:adUnitId="ca-app-pub-5778282166425967/8915320425"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.494"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />-->
+    <!--    <com.google.android.gms.ads.AdView
+            android:id="@+id/adView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            app:adSize="BANNER"
+            app:adUnitId="ca-app-pub-5778282166425967/8915320425"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.494"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />-->
 
-        <!--       <View
-                   android:layout_width="match_parent"
-                   android:layout_height="0.5dp"
-                   android:layout_marginTop="16dp"
-                   android:background="@color/black"
-                   app:layout_constraintEnd_toEndOf="parent"
-                   app:layout_constraintStart_toStartOf="parent"
-                   app:layout_constraintTop_toBottomOf="@+id/adView" />-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

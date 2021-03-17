@@ -22,4 +22,7 @@ public class AppConstant {
     public static final String ID = "id";
     public static final String MSG_ID = "msgId";
     public static final String TITLE = "title";
+    public static final String SHARED_PREFS = "sharedPrefs";
+    public static final String SUBSCRIBE_FOR_NEW_ADD_MSG = "newAddMsg";
+    public static final String KEY_SUBSCRIBE_FOR_NEW_ADD_MSG = "keyNewAddMsg";
 }

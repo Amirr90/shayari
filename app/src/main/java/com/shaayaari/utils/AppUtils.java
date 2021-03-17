@@ -64,6 +64,7 @@ public class AppUtils {
         map.put(AppConstant.MSG, msgModel.getMsg());
         map.put(AppConstant.ID, getUid());
         map.put(AppConstant.MSG_ID, msgModel.getId());
+        map.put(AppConstant.IMAGE, msgModel.getImage());
         map.put(AppConstant.TIMESTAMP, System.currentTimeMillis());
         return map;
     }

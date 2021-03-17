@@ -25,17 +25,18 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.paging.PagedList;
 
-import com.androidnetworking.AndroidNetworking;
-import com.androidnetworking.error.ANError;
-import com.androidnetworking.interfaces.DownloadListener;
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.firebase.ui.firestore.paging.LoadingState;
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.firebase.firestore.Query;
 import com.shaayaari.databinding.FragmentDataBinding;
 import com.shaayaari.databinding.ShayariView2Binding;
@@ -68,11 +69,17 @@ public class DataFragment extends Fragment {
     FirestorePagingAdapter adapter;
     String catId;
 
+
+    //Ad
+    private InterstitialAd mInterstitialAd;
+    AdRequest adRequest;
+
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentDataBinding.inflate(getLayoutInflater());
         initAds();
+        initAdd();
         return binding.getRoot();
     }
 
@@ -84,8 +91,11 @@ public class DataFragment extends Fragment {
             catId = DataFragmentArgs.fromBundle(getArguments()).getId();
         }
 
+
+        showInterstitialAd();
         Objects.requireNonNull(navController.getCurrentDestination()).setLabel(catId);
         setAdapter();
+        setBannerAdd(binding.adView);
 
         binding.btnAddData.setOnClickListener(v -> {
             DataFragmentDirections.ActionDataFragmentToAddDataFragment action = DataFragmentDirections.actionDataFragmentToAddDataFragment();
@@ -96,6 +106,60 @@ public class DataFragment extends Fragment {
         binding.btnAddData.setVisibility(AppConstant.ADMIN_ID.equals(AppUtils.getUid()) ? View.VISIBLE : View.GONE);
 
     }
+
+    private void initAdd() {
+        MobileAds.initialize(requireActivity(), initializationStatus -> {
+        });
+        adRequest = new AdRequest.Builder().build();
+    }
+
+    private void showInterstitialAd() {
+        String addId = "ca-app-pub-5778282166425967/1523915565";
+        InterstitialAd.load(requireActivity(), addId, adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                AppUtils.hideDialog();
+                mInterstitialAd = interstitialAd;
+                Log.i(TAG, "onAdLoaded");
+
+                mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                    @Override
+                    public void onAdDismissedFullScreenContent() {
+                        Log.d(TAG, "The ad was dismissed.");
+
+                    }
+
+                    @Override
+                    public void onAdFailedToShowFullScreenContent(AdError adError) {
+                        Log.d(TAG, "The ad failed to show.");
+
+                    }
+
+                    @Override
+                    public void onAdShowedFullScreenContent() {
+                        mInterstitialAd = null;
+                        Log.d(TAG, "The ad was shown.");
+                    }
+                });
+                if (mInterstitialAd != null) {
+                    mInterstitialAd.show(requireActivity());
+                } else {
+                    Log.d(TAG, "The interstitial ad wasn't ready yet.");
+                }
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                mInterstitialAd = null;
+                AppUtils.hideDialog();
+
+                Log.d(TAG, "onAdFailedToLoad: " + loadAdError.getMessage());
+            }
+
+        });
+
+    }
+
 
     private void setAdapter() {
 
@@ -129,8 +193,6 @@ public class DataFragment extends Fragment {
                 .build();
 
 
-        AppUtils.hideDialog();
-
         //creating Adapter
         adapter = new FirestorePagingAdapter<CategoryModel, CategoryViewHolder>(options) {
             @NonNull
@@ -153,7 +215,6 @@ public class DataFragment extends Fragment {
                 } else {
                     holder.binding.textView3.setText(getString(R.string.copy));
                     holder.binding.imageView2.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_content_copy_24));
-
                 }
                 holder.binding.btnLikes.setOnClickListener(v -> {
                     int likes = Integer.parseInt(holder.binding.textView6.getText().toString());
@@ -169,15 +230,13 @@ public class DataFragment extends Fragment {
                 });
                 holder.binding.btnFavourite.setOnClickListener(v -> {
                     dataPageInterface.onFavouriteBtnClicked(model, holder.binding.btnFavourite.isChecked());
-
                 });
-                setBannerAdd(holder.binding.adView);
+                /*  setBannerAdd(holder.binding.adView);*/
 
-
-                if (position % 2 == 0)
+              /*  if (position % 2 == 0)
                     holder.binding.getRoot().setBackgroundColor(getResources().getColor(R.color.colorGray));
                 else
-                    holder.binding.getRoot().setBackgroundColor(getResources().getColor(R.color.white));
+                    holder.binding.getRoot().setBackgroundColor(getResources().getColor(R.color.white));*/
 
             }
 
@@ -186,23 +245,28 @@ public class DataFragment extends Fragment {
                 super.onLoadingStateChanged(state);
                 switch (state) {
                     case ERROR: {
+                        hideDialog();
                         Log.d(TAG, "onLoadingStateChanged: error ");
                         Toast.makeText(requireActivity(), "failed to get Data !!", Toast.LENGTH_SHORT).show();
                     }
                     break;
                     case FINISHED: {
+                        hideDialog();
                         Log.d(TAG, "onLoadingStateChanged: FINISHED");
                         Toast.makeText(requireActivity(), "No more data !!", Toast.LENGTH_SHORT).show();
                     }
                     break;
                     case LOADED: {
+                        hideDialog();
                         Log.d(TAG, "onLoadingStateChanged: LOADED " + getItemCount());
                     }
                     case LOADING_MORE: {
                         Log.d(TAG, "onLoadingStateChanged: LOADING_MORE");
                     }
                     case LOADING_INITIAL: {
+                        hideDialog();
                         Log.d(TAG, "onLoadingStateChanged: LOADING_INITIAL");
+
                     }
                     break;
                 }
@@ -214,7 +278,6 @@ public class DataFragment extends Fragment {
         binding.recShayariList.setAdapter(adapter);
 
     }
-
 
     @Override
     public void onStop() {
