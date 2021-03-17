@@ -42,7 +42,7 @@
                 android:layout_margin="1dp"
                 android:loadCustomImage="@{data.image}"
                 android:src="@drawable/ic_launcher_foreground"
-                android:visibility="@{data.image==null?View.GONE:View.VISIBLE}"
+                android:visibility="@{data.image==null?View.GONE:data.image.isEmpty()?View.GONE:View.VISIBLE}"
                 app:layout_constraintBottom_toTopOf="@+id/textView2"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
