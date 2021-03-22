@@ -98,4 +98,7 @@ dependencies {
 
     implementation 'com.amitshekhar.android:android-networking:1.0.0'
 
+    implementation  'com.fxn769:pix:1.5.6'
+
+
 }

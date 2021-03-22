@@ -7,13 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,24 +15,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
 import com.github.dhaval2404.imagepicker.ImagePicker;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.shaayaari.databinding.FragmentAddDataBinding;
-import com.shaayaari.databinding.FragmentDataBinding;
-import com.shaayaari.models.CategoryModel;
-import com.shaayaari.utils.App;
 import com.shaayaari.utils.AppConstant;
 import com.shaayaari.utils.AppUtils;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,11 +90,30 @@ public class AddDataFragment extends Fragment {
 
     private void selectImage() {
 
+        String[] mimeType = {"image/png", "image/jpg", "image/jpeg"};
+
         ImagePicker.Companion.with(this)
                 .compress(512)//Final image size will be less than 1 MB(Optional)
                 .crop(5.5f, 5.5f)
+                .galleryOnly()
+                .galleryMimeTypes(mimeType)
+                .saveDir(new File(Environment.getExternalStorageDirectory(), "ImagePicker"))
                 .maxResultSize(800, 800)    //Final image resolution will be less than 1080 x 1080(Optional)
                 .start();
+/*
+        Options options = Options.init()
+                .setRequestCode(AppConstant.REQUEST_IMAGE_CODE)                                           //Request code for activity results
+                .setCount(3)                                                   //Number of images to restict selection count
+                .setFrontfacing(false)                                         //Front Facing camera on start
+                //.setPreSelectedUrls(returnValue)                               //Pre selected Image Urls
+                .setSpanCount(4)//Span count for gallery min 1 & max 5
+                .setMode(Options.Mode.All)                                     //Option to select only pictures or videos or both
+                //.setVideoDurationLimitinSeconds(30)                            //Duration for video recording
+                .setScreenOrientation(Options.SCREEN_ORIENTATION_PORTRAIT)     //Orientaion
+                .setPath("/pix/images");                                       //Custom Path For media Storage
+
+        Pix.start(this, options);*/
+
 
     }
 
@@ -113,7 +127,25 @@ public class AddDataFragment extends Fragment {
                 Log.d(TAG, "onActivityResult: Uri" + data.getData());
                 imageUri = uri;
             } else Log.d(TAG, "onActivityResult: No Data ");
-        } else Log.d(TAG, "onActivityResult: resultCode not matched");
+        } else if (resultCode == ImagePicker.RESULT_ERROR) {
+            Toast.makeText(requireActivity(), "Result Error ", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(requireActivity(), "Task Cancelled", Toast.LENGTH_SHORT).show();
+        }
+
+    /*    if (resultCode == Activity.RESULT_OK && requestCode == AppConstant.REQUEST_IMAGE_CODE) {
+            Log.d(TAG, "onActivityResult: success");
+            Log.d(TAG, "onActivityResult: " + resultCode);
+            Log.d(TAG, "onActivityResult: " + requestCode);
+            ArrayList<String> returnValue = data.getStringArrayListExtra(Pix.IMAGE_RESULTS);
+            Uri uri = Uri.parse(returnValue.get(0));
+            binding.btnSelectImage.setImageURI(uri);
+            imageUri = uri;
+        } else {
+            Log.d(TAG, "onActivityResult: error");
+            Log.d(TAG, "onActivityResult: " + resultCode);
+            Log.d(TAG, "onActivityResult: " + requestCode);
+        }*/
 
     }
 
