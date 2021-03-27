@@ -1,10 +1,12 @@
 package com.shaayaari;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -37,6 +39,7 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.Query;
 import com.shaayaari.databinding.FragmentDataBinding;
 import com.shaayaari.databinding.ShayariView2Binding;
@@ -56,6 +59,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 import static com.shaayaari.utils.AppUtils.getFavouriteMap;
+import static com.shaayaari.utils.AppUtils.getFireStoreReference;
 import static com.shaayaari.utils.AppUtils.getLikeUpdateMap;
 import static com.shaayaari.utils.AppUtils.getUid;
 import static com.shaayaari.utils.AppUtils.hideDialog;
@@ -68,7 +72,6 @@ public class DataFragment extends Fragment {
     NavController navController;
     FirestorePagingAdapter adapter;
     String catId;
-
 
 
     //Ad
@@ -230,6 +233,14 @@ public class DataFragment extends Fragment {
                     holder.binding.textView6.setText(String.valueOf(likes));
                 });
                 holder.binding.btnFavourite.setOnClickListener(v -> dataPageInterface.onFavouriteBtnClicked(model, holder.binding.btnFavourite.isChecked()));
+
+                holder.binding.getRoot().setOnClickListener(v -> {
+                    if (AppConstant.ADMIN_ID.equals(getUid())) {
+                        String id = model.getId();
+                        Log.d(TAG, "onBindViewHolder: " + id);
+                        showDeleteDialog(id, position);
+                    }
+                });
                 /*  setBannerAdd(holder.binding.adView);*/
 
               /*  if (position % 2 == 0)
@@ -276,6 +287,26 @@ public class DataFragment extends Fragment {
         binding.recShayariList.setHasFixedSize(true);
         binding.recShayariList.setAdapter(adapter);
 
+    }
+
+    private void showDeleteDialog(String msgId, int position) {
+        new AlertDialog.Builder(requireActivity()).setMessage("Delete this msg ??").setPositiveButton("Yes", (dialog, which) -> {
+            dialog.dismiss();
+            deleteMsg(msgId, position);
+        }).setNegativeButton("No", (dialog, which) -> dialog.dismiss()).show();
+    }
+
+    private void deleteMsg(String msgId, int position) {
+        AppUtils.showRequestDialog(requireActivity());
+        getFireStoreReference().collection(AppConstant.DATA).document(msgId).delete().addOnSuccessListener(aVoid -> {
+            AppUtils.hideDialog();
+            Toast.makeText(requireActivity(), "Delete !!", Toast.LENGTH_SHORT).show();
+            //adapter.refresh();
+
+        }).addOnFailureListener(e -> {
+            AppUtils.hideDialog();
+            Toast.makeText(requireActivity(), "unable to delete this msg !!", Toast.LENGTH_SHORT).show();
+        });
     }
 
     @Override

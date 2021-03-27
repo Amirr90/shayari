@@ -56,10 +56,12 @@ public class FirebaseMessageService extends FirebaseMessagingService {
 
         String title = json.getString("title");
         String msg = json.getString("body");
-        String gameId = json.getString("msgId");
+        String msgId = json.getString("action");
+
 
         Bundle bundle = new Bundle();
-        bundle.putString("gameId", gameId);
+        bundle.putString("id", msgId);
+
         PendingIntent pendingIntent = new NavDeepLinkBuilder(App.context)
                 .setGraph(R.navigation.nav_host)
                 .setDestination(R.id.dataFragment)
