@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "299021430804-cnepko25tn3v5s8kopkqgp1bvssjoff0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shaayaari",
+            "certificate_hash": "b8bd74315ae1bbe5466dbf109d989f90a93ee740"
+          }
+        },
+        {
           "client_id": "299021430804-edciibgfqc8aqrsuhb9gbg5j4rdihgpq.apps.googleusercontent.com",
           "client_type": 3
         }

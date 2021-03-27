@@ -26,4 +26,5 @@ public class AppConstant {
     public static final String SUBSCRIBE_FOR_NEW_ADD_MSG = "newAddMsg";
     public static final String KEY_SUBSCRIBE_FOR_NEW_ADD_MSG = "keyNewAddMsg";
     public static final int REQUEST_IMAGE_CODE = 101;
+    public static final String APP_NAME = "Shayari";
 }

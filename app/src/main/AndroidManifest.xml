@@ -17,7 +17,8 @@
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.Shayari"
-        tools:replace="android:theme">
+        tools:replace="android:theme"
+        android:fullBackupContent="@xml/backup_descriptor">
         <activity android:name="com.shaayaari.HomeScreen" />
 
         <activity

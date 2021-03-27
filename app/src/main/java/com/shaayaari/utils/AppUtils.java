@@ -13,8 +13,6 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FieldValue;
@@ -22,10 +20,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.shaayaari.R;
 import com.shaayaari.models.CategoryModel;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -39,12 +34,8 @@ public class AppUtils {
         return AnimationUtils.loadAnimation(activity, R.anim.fade_in);
     }
 
-    public static Animation fadeOut(Activity activity) {
-        return AnimationUtils.loadAnimation(activity, R.anim.fade_out);
-    }
-
     public static void updateFavouriteIds(boolean var, Object model) {
-        Log.d(TAG, "updateFavouriteIds: " + (String) model);
+        Log.d(TAG, "updateFavouriteIds: " + model);
         if (var) {
             AppUtils.getFireStoreReference().collection(AppConstant.DATA)
                     .document((String) model)
@@ -77,38 +68,11 @@ public class AppUtils {
 
     }
 
-    public static String getCountInRomanFormat(Number number) {
-        char[] suffix = {' ', 'k', 'M', 'B', 'T', 'P', 'E'};
-        long numValue = number.longValue();
-        int value = (int) Math.floor(Math.log10(numValue));
-        int base = value / 3;
-        if (value >= 3 && base < suffix.length) {
-            return new DecimalFormat("#0.0").format(numValue / Math.pow(10, base * 3)) + suffix[base];
-        } else {
-            return new DecimalFormat("#,##0").format(numValue);
-        }
-    }
-
-    public static String getCountInRomanFormat(String num) {
-        Number number = Integer.parseInt(num);
-        char[] suffix = {' ', 'k', 'M', 'B', 'T', 'P', 'E'};
-        long numValue = number.longValue();
-        int value = (int) Math.floor(Math.log10(numValue));
-        int base = value / 3;
-        if (value >= 3 && base < suffix.length) {
-            return new DecimalFormat("#0.0").format(numValue / Math.pow(10, base * 3)) + suffix[base];
-        } else {
-            return new DecimalFormat("#,##0").format(numValue);
-        }
-    }
 
     public static FirebaseFirestore getFireStoreReference() {
         return FirebaseFirestore.getInstance();
     }
 
-    public static FirebaseUser getCurrentUser() {
-        return FirebaseAuth.getInstance().getCurrentUser();
-    }
 
     public static String getUid() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -117,62 +81,18 @@ public class AppUtils {
         else return null;
     }
 
-    public static String getCurrencyFormat(double num) {
-        String COUNTRY = "IN";
-        String LANGUAGE = "en";
-        return NumberFormat.getCurrencyInstance(new Locale(LANGUAGE, COUNTRY)).format(num);
-    }
-
-    public static String getCurrencyFormat(long num) {
-        String COUNTRY = "IN";
-        String LANGUAGE = "en";
-        return NumberFormat.getCurrencyInstance(new Locale(LANGUAGE, COUNTRY)).format(num);
-    }
-
-    public static String getCurrencyFormat(String num) {
-        Double number = Double.parseDouble(num);
-        String COUNTRY = "IN";
-        String LANGUAGE = "en";
-        return NumberFormat.getCurrencyInstance(new Locale(LANGUAGE, COUNTRY)).format(number);
-
-    }
-
-    public static void showToolbar(Activity activity) {
-        Objects.requireNonNull(((AppCompatActivity) activity).getSupportActionBar()).show();
-    }
-
-    public static void hideToolbar(Activity activity) {
-        Objects.requireNonNull(((AppCompatActivity) activity).getSupportActionBar()).hide();
-    }
-
-    public static String getDateInDMYFormatFromTimestamp(long currentTimeMillis) {
-        try {
-            String value = new java.text.SimpleDateFormat("yyyy-MM-dd").
-                    format(new java.util.Date(currentTimeMillis));
-            return value;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-
-    }
 
     public static void showRequestDialog(Activity activity) {
         try {
-            if (!((Activity) activity).isFinishing()) {
+            if (!(activity).isFinishing()) {
                 if (progressDialog == null) {
                     progressDialog = new ProgressDialog(activity);
-                    progressDialog = ProgressDialog.show(activity, null, null, false, true);
-                    progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(activity.getResources().getColor(android.R.color.transparent)));
-                    progressDialog.setContentView(R.layout.progress_bar);
 
-                    progressDialog.show();
-                } else {
-                    progressDialog = ProgressDialog.show(activity, null, null, false, true);
-                    progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(activity.getResources().getColor(android.R.color.transparent)));
-                    progressDialog.setContentView(R.layout.progress_bar);
-                    progressDialog.show();
                 }
+                progressDialog = ProgressDialog.show(activity, null, null, false, true);
+                progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(activity.getResources().getColor(android.R.color.transparent)));
+                progressDialog.setContentView(R.layout.progress_bar);
+                progressDialog.show();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -180,31 +100,6 @@ public class AppUtils {
 
     }
 
-    public static void showRequestDialog(Activity activity, boolean isCancelable) {
-        try {
-            if (!((Activity) activity).isFinishing()) {
-                if (progressDialog == null) {
-                    progressDialog = new ProgressDialog(activity);
-
-                    progressDialog = ProgressDialog.show(activity, null, null, false, true);
-                    progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(activity.getResources().getColor(android.R.color.transparent)));
-                    progressDialog.setCancelable(isCancelable);
-                    progressDialog.setContentView(R.layout.progress_bar);
-
-                    progressDialog.show();
-                } else {
-                    progressDialog = ProgressDialog.show(activity, null, null, false, true);
-                    progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(activity.getResources().getColor(android.R.color.transparent)));
-                    progressDialog.setContentView(R.layout.progress_bar);
-                    progressDialog.setCancelable(isCancelable);
-                    progressDialog.show();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
 
     public static void hideDialog() {
         try {
@@ -233,7 +128,7 @@ public class AppUtils {
             }
         }
 
-        activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        Objects.requireNonNull(activity).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
     }
 }

@@ -1,18 +1,17 @@
 package com.shaayaari.views;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
@@ -143,15 +142,12 @@ public class DashboardFragment extends Fragment implements AdapterInterface {
     @Override
     public void onItemClicked(Object o) {
         String id = (String) o;
-        switch (id) {
-            case AppConstant.FAVOURITE_ID:
-                navController.navigate(R.id.action_dashboardFragment_to_favouriteMsgFragment);
-                break;
-            default: {
-                DashboardFragmentDirections.ActionDashboardFragmentToDataFragment action = DashboardFragmentDirections.actionDashboardFragmentToDataFragment();
-                action.setId(id);
-                navController.navigate(action);
-            }
+        if (AppConstant.FAVOURITE_ID.equals(id)) {
+            navController.navigate(R.id.action_dashboardFragment_to_favouriteMsgFragment);
+        } else {
+            DashboardFragmentDirections.ActionDashboardFragmentToDataFragment action = DashboardFragmentDirections.actionDashboardFragmentToDataFragment();
+            action.setId(id);
+            navController.navigate(action);
         }
 
 

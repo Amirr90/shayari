@@ -13,4 +13,7 @@
     <string name="default_notification_channel_id">com.shaayaari</string>
     <string name="msg_subscribed">subscribe</string>
     <string name="msg_subscribe_failed">subscribing failed</string>
+    <string name="category">"Category "</string>
+    <string name="todo">todo</string>
+    <string name="adding_msg">Adding msg</string>
 </resources>

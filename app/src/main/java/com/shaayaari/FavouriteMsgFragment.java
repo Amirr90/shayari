@@ -33,11 +33,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.shaayaari.databinding.FragmentDataBinding;
 import com.shaayaari.databinding.FragmentFavouriteMsgBinding;
 import com.shaayaari.databinding.ShayariView2Binding;
 import com.shaayaari.interfaces.DataPageInterface;
@@ -53,8 +49,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
-import static com.shaayaari.utils.AppUtils.getFavouriteMap;
 import static com.shaayaari.utils.AppUtils.getLikeUpdateMap;
 import static com.shaayaari.utils.AppUtils.getUid;
 import static com.shaayaari.utils.AppUtils.updateFavouriteIds;
@@ -110,7 +106,7 @@ public class FavouriteMsgFragment extends Fragment {
                     if (null != categoryModel) {
                         categoryModel.setId(snapshot.getId());
                     }
-                    return categoryModel;
+                    return Objects.requireNonNull(categoryModel);
                 })
                 .build();
 
@@ -224,9 +220,7 @@ public class FavouriteMsgFragment extends Fragment {
                         .collection(AppConstant.FAVOURITE)
                         .document(msgModel.getId())
                         .delete()
-                        .addOnSuccessListener(aVoid -> {
-                            updateFavouriteIds(false, id);
-                        })
+                        .addOnSuccessListener(aVoid -> updateFavouriteIds(false, id))
                         .addOnFailureListener(e -> Toast.makeText(requireActivity(), "try again !!", Toast.LENGTH_SHORT).show());
 
             adapter.refresh();
@@ -238,7 +232,7 @@ public class FavouriteMsgFragment extends Fragment {
             AppUtils.getFireStoreReference()
                     .collection(AppConstant.DATA)
                     .document(id)
-                    .update(getLikeUpdateMap(AppConstant.INCREMENT.equals((String) obj)));
+                    .update(getLikeUpdateMap(AppConstant.INCREMENT.equals(obj)));
 
         }
 

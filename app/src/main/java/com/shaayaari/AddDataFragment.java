@@ -34,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,7 +71,7 @@ public class AddDataFragment extends Fragment {
         navController = Navigation.findNavController(view);
         catId = AddDataFragmentArgs.fromBundle(getArguments()).getCatId();
 
-        binding.tvCatId.setText("Category " + catId);
+        binding.tvCatId.setText(MessageFormat.format("{0}{1}", getString(R.string.category), catId));
 
 
         binding.btnAddMsg.setOnClickListener(v -> {
@@ -100,19 +101,7 @@ public class AddDataFragment extends Fragment {
                 .saveDir(new File(Environment.getExternalStorageDirectory(), "ImagePicker"))
                 .maxResultSize(800, 800)    //Final image resolution will be less than 1080 x 1080(Optional)
                 .start();
-/*
-        Options options = Options.init()
-                .setRequestCode(AppConstant.REQUEST_IMAGE_CODE)                                           //Request code for activity results
-                .setCount(3)                                                   //Number of images to restict selection count
-                .setFrontfacing(false)                                         //Front Facing camera on start
-                //.setPreSelectedUrls(returnValue)                               //Pre selected Image Urls
-                .setSpanCount(4)//Span count for gallery min 1 & max 5
-                .setMode(Options.Mode.All)                                     //Option to select only pictures or videos or both
-                //.setVideoDurationLimitinSeconds(30)                            //Duration for video recording
-                .setScreenOrientation(Options.SCREEN_ORIENTATION_PORTRAIT)     //Orientaion
-                .setPath("/pix/images");                                       //Custom Path For media Storage
 
-        Pix.start(this, options);*/
 
 
     }
@@ -161,9 +150,9 @@ public class AddDataFragment extends Fragment {
         StorageReference spaceRef = storageRef.child(STORAGE_PATH);
 
         Bitmap bitmap2 = ((BitmapDrawable) binding.btnSelectImage.getDrawable()).getBitmap();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap2.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] compressData = baos.toByteArray();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap2.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+        byte[] compressData = outputStream.toByteArray();
         UploadTask uploadTask = spaceRef.putBytes(compressData);
 
         uploadTask.addOnProgressListener(taskSnapshot -> {

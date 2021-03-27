@@ -9,7 +9,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="colorGray">#E8E8E8</color>
-    <color name="colorGrayLight">#94FBF9F9</color>
     <color name="TextPrimaryColor">#262e3f</color>
     <color name="TextSecondaryColor">#3f4e6e</color>
 </resources>

@@ -70,6 +70,7 @@ public class DataFragment extends Fragment {
     String catId;
 
 
+
     //Ad
     private InterstitialAd mInterstitialAd;
     AdRequest adRequest;
@@ -188,7 +189,7 @@ public class DataFragment extends Fragment {
                             categoryModel.setFavourite(favourite.equals(getUid()));
                         }
                     }
-                    return categoryModel;
+                    return Objects.requireNonNull(categoryModel);
                 })
                 .build();
 
@@ -228,9 +229,7 @@ public class DataFragment extends Fragment {
                     dataPageInterface.onLikeClicked(holder.binding.btnLikes.isChecked() ? AppConstant.INCREMENT : AppConstant.DECREMENT, id);
                     holder.binding.textView6.setText(String.valueOf(likes));
                 });
-                holder.binding.btnFavourite.setOnClickListener(v -> {
-                    dataPageInterface.onFavouriteBtnClicked(model, holder.binding.btnFavourite.isChecked());
-                });
+                holder.binding.btnFavourite.setOnClickListener(v -> dataPageInterface.onFavouriteBtnClicked(model, holder.binding.btnFavourite.isChecked()));
                 /*  setBannerAdd(holder.binding.adView);*/
 
               /*  if (position % 2 == 0)
@@ -340,14 +339,16 @@ public class DataFragment extends Fragment {
                 shareImage(categoryModel.getImage(), catId);
             } else {
                 Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                String supportUrl = "\ndownload the app : https://play.google.com/store/apps/details?id=com.shaayaari";
                 String shareBody = categoryModel.getMsg();
                 intent.setType("text/plain");
                 intent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
-                intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody + supportUrl);
                 startActivity(Intent.createChooser(intent, getString(R.string.share_using)));
             }
 
         }
+
 
         @Override
         public void onFavouriteBtnClicked(Object model, Object var) {
@@ -360,9 +361,7 @@ public class DataFragment extends Fragment {
                             .document(getUid())
                             .collection(AppConstant.FAVOURITE)
                             .document(msgModel.getId()).set(getFavouriteMap(msgModel))
-                            .addOnSuccessListener(aVoid -> {
-                                updateFavouriteIds((boolean) var, id);
-                            })
+                            .addOnSuccessListener(aVoid -> updateFavouriteIds((boolean) var, id))
                             .addOnFailureListener(e -> Toast.makeText(requireActivity(), "try again !!", Toast.LENGTH_SHORT).show());
             } else {
                 if (null != getUid())
@@ -371,10 +370,7 @@ public class DataFragment extends Fragment {
                             .collection(AppConstant.FAVOURITE)
                             .document(msgModel.getId())
                             .delete()
-                            .addOnSuccessListener(aVoid -> {
-
-                                updateFavouriteIds((boolean) var, id);
-                            })
+                            .addOnSuccessListener(aVoid -> updateFavouriteIds((boolean) var, id))
                             .addOnFailureListener(e -> Toast.makeText(requireActivity(), "try again !!", Toast.LENGTH_SHORT).show());
             }
 
@@ -385,7 +381,7 @@ public class DataFragment extends Fragment {
             AppUtils.getFireStoreReference()
                     .collection(AppConstant.DATA)
                     .document(id)
-                    .update(getLikeUpdateMap(AppConstant.INCREMENT.equals((String) obj)));
+                    .update(getLikeUpdateMap(AppConstant.INCREMENT.equals(obj)));
 
         }
 
@@ -397,7 +393,7 @@ public class DataFragment extends Fragment {
                 downloadImage(msgModel.getImage());
             } else {
                 ClipboardManager clipboard = (ClipboardManager) requireActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("label", msgModel.getMsg());
+                ClipData clip = ClipData.newPlainText(AppConstant.APP_NAME, msgModel.getMsg());
                 if (clipboard == null || clip == null) return;
                 clipboard.setPrimaryClip(clip);
                 Toast.makeText(requireActivity(), "copied !!", Toast.LENGTH_SHORT).show();
@@ -406,6 +402,7 @@ public class DataFragment extends Fragment {
     };
 
     private void downloadImage(String url) {
+
         //Download Image
         DownloadManager downloadManager = (DownloadManager) App.context.getSystemService(Context.DOWNLOAD_SERVICE);
         Uri uri = Uri.parse(url);

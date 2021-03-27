@@ -13,7 +13,7 @@ import com.shaayaari.interfaces.AdapterInterface;
 import java.util.List;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeVH> {
-    List<DocumentSnapshot> homeModels;
+    final List<DocumentSnapshot> homeModels;
     AdapterInterface adapterInterface;
 
     public HomeAdapter(List<DocumentSnapshot> homeModels, AdapterInterface adapterInterface) {

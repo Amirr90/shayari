@@ -31,7 +31,7 @@ import java.util.Map;
 public class FirebaseMessageService extends FirebaseMessagingService {
 
     private static final String TAG = "FirebaseMessageService";
-    String CHANNEL_ID = "com.example.playludo";
+    final String CHANNEL_ID = "com.example.playludo";
     private NotificationManager mManager;
     Bitmap bitmap;
     Context context;
@@ -41,9 +41,8 @@ public class FirebaseMessageService extends FirebaseMessagingService {
         Log.d(TAG, "onMessageReceivedData: " + remoteMessage.getData());
 
         try {
-            if (remoteMessage.getData() != null)
-                showNotification(remoteMessage.getData());
-            else Log.d(TAG, "onMessageReceivedData: " + remoteMessage.getData());
+            remoteMessage.getData();
+            showNotification(remoteMessage.getData());
         } catch (JSONException e) {
             e.printStackTrace();
             Log.d(TAG, "onMessageReceived: error " + e.getLocalizedMessage());
