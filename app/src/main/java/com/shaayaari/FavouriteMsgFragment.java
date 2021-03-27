@@ -143,12 +143,6 @@ public class FavouriteMsgFragment extends Fragment {
 
                 holder.binding.btnFavourite.setOnClickListener(v -> dataPageInterface.onFavouriteBtnClicked(model, holder.binding.btnFavourite.isChecked()));
 
-               /* if (position % 2 == 0)
-                    holder.binding.getRoot().setBackgroundColor(getResources().getColor(R.color.colorGray));
-                else
-                    holder.binding.getRoot().setBackgroundColor(getResources().getColor(R.color.white));*/
-
-
             }
 
             @Override

@@ -98,7 +98,6 @@ public class AddDataFragment extends Fragment {
                 .crop(5.5f, 5.5f)
                 .galleryOnly()
                 .galleryMimeTypes(mimeType)
-                .saveDir(new File(Environment.getExternalStorageDirectory(), "ImagePicker"))
                 .maxResultSize(800, 800)    //Final image resolution will be less than 1080 x 1080(Optional)
                 .start();
 
