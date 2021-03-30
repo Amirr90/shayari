@@ -46,6 +46,7 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
+
             android:id="@+id/recImage"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -53,11 +54,12 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
             android:src="@drawable/ic_launcher_foreground"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/btnSelectImage"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName"
+            app:spanCount="3"
             tools:listitem="@layout/image_view" />
 
         <Button
