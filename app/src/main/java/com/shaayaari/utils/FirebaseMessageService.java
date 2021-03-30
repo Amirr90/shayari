@@ -40,13 +40,13 @@ public class FirebaseMessageService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.d(TAG, "onMessageReceivedData: " + remoteMessage.getData());
 
-        try {
+        /*try {
             remoteMessage.getData();
             showNotification(remoteMessage.getData());
         } catch (JSONException e) {
             e.printStackTrace();
             Log.d(TAG, "onMessageReceived: error " + e.getLocalizedMessage());
-        }
+        }*/
 
     }
 

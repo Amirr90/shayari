@@ -25,6 +25,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.shaayaari.adapter.SelectedImageAdapter;
 import com.shaayaari.databinding.FragmentAddDataBinding;
 import com.shaayaari.utils.AppConstant;
 import com.shaayaari.utils.AppUtils;
@@ -33,7 +34,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.shaayaari.utils.AppUtils.getFireStoreReference;
@@ -46,6 +49,10 @@ public class AddDataFragment extends Fragment {
     NavController navController;
     Uri imageUri;
     ProgressDialog progressDialog;
+
+    SelectedImageAdapter imageAdapter;
+    List<Uri> list;
+    int counter = 1;
 
 
     @Override
@@ -85,6 +92,11 @@ public class AddDataFragment extends Fragment {
         binding.btnAddMsg.setVisibility(AppConstant.ADMIN_ID.equals(getUid()) ? View.VISIBLE : View.GONE);
 
         binding.btnSelectImage.setOnClickListener(v -> selectImage());
+
+        list = new ArrayList<>();
+        imageAdapter = new SelectedImageAdapter(list);
+        binding.recImage.setAdapter(imageAdapter);
+
     }
 
     private void selectImage() {
@@ -108,7 +120,9 @@ public class AddDataFragment extends Fragment {
         if (resultCode == Activity.RESULT_OK) {
             if (null != data) {
                 Uri uri = data.getData();
-                binding.btnSelectImage.setImageURI(uri);
+                //binding.btnSelectImage.setImageURI(uri);
+                list.add(uri);
+                imageAdapter.notifyDataSetChanged();
                 Log.d(TAG, "onActivityResult: Uri" + data.getData());
                 imageUri = uri;
             } else Log.d(TAG, "onActivityResult: No Data ");
@@ -123,46 +137,50 @@ public class AddDataFragment extends Fragment {
 
 
     private void uploadImageToFirebase() {
-        progressDialog.show();
-        progressDialog.setMessage("Uploading image, please wait...");
+
+
         FirebaseStorage storage = FirebaseStorage.getInstance();
         final StorageReference storageRef = storage.getReference();
 
 
-        final String STORAGE_PATH = "shaayaariImage/" + catId + "/" + System.currentTimeMillis() + ".jpg";
-        StorageReference spaceRef = storageRef.child(STORAGE_PATH);
+        for (Uri uri : list) {
+            progressDialog.setMessage("Uploading " + counter + " image, please wait...");
+            progressDialog.show();
+            final String STORAGE_PATH = "shaayaariImage/" + catId + "/" + System.currentTimeMillis() + ".jpg";
+            StorageReference spaceRef = storageRef.child(STORAGE_PATH);
 
-        Bitmap bitmap2 = ((BitmapDrawable) binding.btnSelectImage.getDrawable()).getBitmap();
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap2.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-        byte[] compressData = outputStream.toByteArray();
-        UploadTask uploadTask = spaceRef.putBytes(compressData);
+            UploadTask uploadTask = spaceRef.putFile(uri);
 
-        uploadTask.addOnProgressListener(taskSnapshot -> {
-            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-            progressDialog.setProgress((int) progress);
-        }).addOnSuccessListener(taskSnapshot -> storageRef.child(STORAGE_PATH).getDownloadUrl().addOnSuccessListener(uri1 -> {
-            progressDialog.dismiss();
-            addMsg("new message added !!", uri1.toString());
-        })).addOnCanceledListener(() -> {
-            progressDialog.dismiss();
-            Toast.makeText(requireActivity(), "Upload cancelled, try again", Toast.LENGTH_SHORT).show();
-        }).addOnFailureListener(e -> {
-            progressDialog.dismiss();
-            Toast.makeText(requireActivity(), "failed to upload Image " + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-        });
+            uploadTask.addOnProgressListener(taskSnapshot -> {
+                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                progressDialog.setProgress((int) progress);
+            }).addOnSuccessListener(taskSnapshot -> storageRef.child(STORAGE_PATH).getDownloadUrl().addOnSuccessListener(uri1 -> {
+                progressDialog.dismiss();
+                addMsg("", uri1.toString());
 
+            })).addOnCanceledListener(() -> {
+                progressDialog.dismiss();
+                Toast.makeText(requireActivity(), "Upload cancelled, try again", Toast.LENGTH_SHORT).show();
+            }).addOnFailureListener(e -> {
+                progressDialog.dismiss();
+                Toast.makeText(requireActivity(), "failed to upload Image " + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            });
+
+
+
+
+        }
 
     }
 
     private void addMsg(String msg, String image) {
-        AppUtils.hideSoftKeyboard(requireActivity());
+       // AppUtils.hideSoftKeyboard(requireActivity());
         AppUtils.showRequestDialog(requireActivity());
         getFireStoreReference().collection(AppConstant.DATA).add(getMsgMap(msg, image))
                 .addOnSuccessListener(documentReference -> {
                     AppUtils.hideDialog();
                     Toast.makeText(requireActivity(), "Added successfully !!", Toast.LENGTH_SHORT).show();
-                    navController.navigateUp();
+                    //navController.navigateUp();
                 })
                 .addOnFailureListener(e -> {
                     AppUtils.hideDialog();
