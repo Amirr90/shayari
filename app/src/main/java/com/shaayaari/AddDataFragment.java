@@ -118,19 +118,6 @@ public class AddDataFragment extends Fragment {
             Toast.makeText(requireActivity(), "Task Cancelled", Toast.LENGTH_SHORT).show();
         }
 
-    /*    if (resultCode == Activity.RESULT_OK && requestCode == AppConstant.REQUEST_IMAGE_CODE) {
-            Log.d(TAG, "onActivityResult: success");
-            Log.d(TAG, "onActivityResult: " + resultCode);
-            Log.d(TAG, "onActivityResult: " + requestCode);
-            ArrayList<String> returnValue = data.getStringArrayListExtra(Pix.IMAGE_RESULTS);
-            Uri uri = Uri.parse(returnValue.get(0));
-            binding.btnSelectImage.setImageURI(uri);
-            imageUri = uri;
-        } else {
-            Log.d(TAG, "onActivityResult: error");
-            Log.d(TAG, "onActivityResult: " + resultCode);
-            Log.d(TAG, "onActivityResult: " + requestCode);
-        }*/
 
     }
 
@@ -156,7 +143,7 @@ public class AddDataFragment extends Fragment {
             progressDialog.setProgress((int) progress);
         }).addOnSuccessListener(taskSnapshot -> storageRef.child(STORAGE_PATH).getDownloadUrl().addOnSuccessListener(uri1 -> {
             progressDialog.dismiss();
-            addMsg("", uri1.toString());
+            addMsg("new message added !!", uri1.toString());
         })).addOnCanceledListener(() -> {
             progressDialog.dismiss();
             Toast.makeText(requireActivity(), "Upload cancelled, try again", Toast.LENGTH_SHORT).show();

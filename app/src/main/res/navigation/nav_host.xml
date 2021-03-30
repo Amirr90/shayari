@@ -23,6 +23,9 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/fade_out" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_addNewCategoryFragment"
+            app:destination="@id/addNewCategoryFragment" />
     </fragment>
     <fragment
         android:id="@+id/dataFragment"
@@ -55,4 +58,9 @@
         android:name="com.shaayaari.FavouriteMsgFragment"
         android:label="Favourite"
         tools:layout="@layout/fragment_favourite_msg" />
+    <fragment
+        android:id="@+id/addNewCategoryFragment"
+        android:name="com.shaayaari.AddNewCategoryFragment"
+        android:label="fragment_add_new_category"
+        tools:layout="@layout/fragment_add_new_category" />
 </navigation>

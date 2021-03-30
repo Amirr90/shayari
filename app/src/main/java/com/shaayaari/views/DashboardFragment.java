@@ -33,6 +33,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.shaayaari.utils.AppUtils.getUid;
+
 
 public class DashboardFragment extends Fragment implements AdapterInterface {
     private static final String TAG = "DashboardFragment";
@@ -69,6 +71,10 @@ public class DashboardFragment extends Fragment implements AdapterInterface {
         adapter = new HomeAdapter(snapshots, this);
         dashboardBinding.recHome.setAdapter(adapter);
         loadCategoryData();
+
+
+        dashboardBinding.button2.setVisibility(AppConstant.ADMIN_ID.equals(getUid()) ? View.VISIBLE : View.GONE);
+        dashboardBinding.button2.setOnClickListener(v -> navController.navigate(R.id.action_dashboardFragment_to_addNewCategoryFragment));
     }
 
     private void initAdd() {
