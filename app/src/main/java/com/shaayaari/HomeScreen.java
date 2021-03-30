@@ -60,19 +60,6 @@ public class HomeScreen extends AppCompatActivity {
                 });
     }
 
-    public void getData() {
-        String bidId = getIntent().getStringExtra(AppConstant.MSG_ID);
-        Log.d(TAG, "bidId: " + bidId);
-        if (null != bidId && !bidId.isEmpty()) {
-            DashboardFragmentDirections.ActionDashboardFragmentToDataFragment action = DashboardFragmentDirections.actionDashboardFragmentToDataFragment();
-            action.setId(getIntent().getStringExtra(AppConstant.MSG_ID));
-            navController.navigate(action);
-        } else if (null != type && !type.isEmpty()) {
-            navController.navigate(R.id.action_appDashboardFragment_to_addMoneyHistoryFragment2);
-        }
-
-
-    }
 
     public void getData() {
         String bidId = getIntent().getStringExtra(AppConstant.MSG_ID);

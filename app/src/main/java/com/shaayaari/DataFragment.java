@@ -96,10 +96,14 @@ public class DataFragment extends Fragment {
         }
 
 
-        showInterstitialAd();
+        //showInterstitialAd();
+
         Objects.requireNonNull(navController.getCurrentDestination()).setLabel(catId);
         setAdapter();
-        setBannerAdd(binding.adView);
+        if (!AppConstant.ADMIN_ID.equals(AppUtils.getUid())) {
+            showInterstitialAd();
+            setBannerAdd(binding.adView);
+        }
 
         binding.btnAddData.setOnClickListener(v -> {
             DataFragmentDirections.ActionDataFragmentToAddDataFragment action = DataFragmentDirections.actionDataFragmentToAddDataFragment();
@@ -370,7 +374,7 @@ public class DataFragment extends Fragment {
                 shareImage(categoryModel.getImage(), catId);
             } else {
                 Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-                String supportUrl = "\ndownload the app : https://play.google.com/store/apps/details?id=com.shaayaari";
+                String supportUrl = "\n'Shayari' download the app : https://play.google.com/store/apps/details?id=com.shaayaari";
                 String shareBody = categoryModel.getMsg();
                 intent.setType("text/plain");
                 intent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.share_subject));

@@ -53,77 +53,84 @@ public class FirebaseMessageService extends FirebaseMessagingService {
     private void showNotification(Map<String, String> data) throws JSONException {
 
         JSONObject json = new JSONObject(data);
+        try {
+            String title = json.getString("title");
+            String msg = json.getString("body");
+            String msgId = json.getString("msgId");
 
-        String title = json.getString("title");
-        String msg = json.getString("body");
-        String msgId = json.getString("action");
+            Bundle bundle = new Bundle();
+            bundle.putString("id", msgId);
 
 
-        Bundle bundle = new Bundle();
-        bundle.putString("id", msgId);
+            //if body || title null or empty return
+            if (null == msg && msg.isEmpty() && null == title && title.isEmpty())
+                return;
+            PendingIntent pendingIntent = new NavDeepLinkBuilder(App.context)
+                    .setGraph(R.navigation.nav_host)
+                    .setDestination(R.id.dataFragment)
+                    .setArguments(bundle)
+                    .createPendingIntent();
 
-        PendingIntent pendingIntent = new NavDeepLinkBuilder(App.context)
-                .setGraph(R.navigation.nav_host)
-                .setDestination(R.id.dataFragment)
-                .setArguments(bundle)
-                .createPendingIntent();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel androidChannel = new NotificationChannel(CHANNEL_ID,
+                        title, NotificationManager.IMPORTANCE_HIGH);
+                androidChannel.enableLights(true);
+                androidChannel.enableVibration(true);
+                androidChannel.setLightColor(Color.GREEN);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel androidChannel = new NotificationChannel(CHANNEL_ID,
-                    title, NotificationManager.IMPORTANCE_HIGH);
-            androidChannel.enableLights(true);
-            androidChannel.enableVibration(true);
-            androidChannel.setLightColor(Color.GREEN);
+                androidChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+                getManager().createNotificationChannel(androidChannel);
 
-            androidChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-            getManager().createNotificationChannel(androidChannel);
-
-            NotificationCompat.Builder notification = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle(title)
-                    .setContentText(msg)
-                    .setStyle(new NotificationCompat.BigTextStyle().bigText(msg))
-                    .setAutoCancel(true)
-                    .setContentIntent(pendingIntent);
-
-            if (bitmap != null) {
-                notification.setLargeIcon(bitmap);
-            }
-
-            //int timestamp = 1000;
-            int timestamp = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
-
-            getManager().notify(timestamp, notification.build());
-
-            playNotificationSound();
-
-        } else {
-            try {
-
-                playNotificationSound();
-                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.mipmap.ic_launcher_foreground)
+                NotificationCompat.Builder notification = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                        .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(title)
                         .setContentText(msg)
-                        .setAutoCancel(true)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setStyle(new NotificationCompat.BigTextStyle().bigText(msg))
-                        .setContentIntent(pendingIntent)
-                        .setDefaults(Notification.DEFAULT_ALL)
-                        .setLights(0xFF760193, 300, 1000)
-                        .setVibrate(new long[]{200, 400});
+                        .setAutoCancel(true)
+                        .setContentIntent(pendingIntent);
 
                 if (bitmap != null) {
-                    notificationBuilder.setLargeIcon(bitmap);
+                    notification.setLargeIcon(bitmap);
                 }
+
+                //int timestamp = 1000;
                 int timestamp = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
-                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                notificationManager.notify(timestamp, notificationBuilder.build());
-            } catch (SecurityException se) {
-                se.printStackTrace();
-                Log.d(TAG, "createNotification: " + se.getLocalizedMessage());
+
+                getManager().notify(timestamp, notification.build());
+
+                playNotificationSound();
+
+            } else {
+                try {
+
+                    playNotificationSound();
+                    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
+                            .setSmallIcon(R.mipmap.ic_launcher_foreground)
+                            .setContentTitle(title)
+                            .setContentText(msg)
+                            .setAutoCancel(true)
+                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                            .setStyle(new NotificationCompat.BigTextStyle().bigText(msg))
+                            .setContentIntent(pendingIntent)
+                            .setDefaults(Notification.DEFAULT_ALL)
+                            .setLights(0xFF760193, 300, 1000)
+                            .setVibrate(new long[]{200, 400});
+
+                    if (bitmap != null) {
+                        notificationBuilder.setLargeIcon(bitmap);
+                    }
+                    int timestamp = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+                    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.notify(timestamp, notificationBuilder.build());
+                } catch (SecurityException se) {
+                    se.printStackTrace();
+                    Log.d(TAG, "createNotification: " + se.getLocalizedMessage());
+                }
             }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+
 
     }
 

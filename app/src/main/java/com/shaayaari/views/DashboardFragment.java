@@ -62,7 +62,8 @@ public class DashboardFragment extends Fragment implements AdapterInterface {
 
         navController = Navigation.findNavController(view);
 
-        showInterstitialAd();
+        if (!AppConstant.ADMIN_ID.equals(AppUtils.getUid()))
+            showInterstitialAd();
 
         snapshots = new ArrayList<>();
         adapter = new HomeAdapter(snapshots, this);
