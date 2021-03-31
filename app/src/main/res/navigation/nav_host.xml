@@ -61,6 +61,6 @@
     <fragment
         android:id="@+id/addNewCategoryFragment"
         android:name="com.shaayaari.AddNewCategoryFragment"
-        android:label="fragment_add_new_category"
+        android:label="Add New Category"
         tools:layout="@layout/fragment_add_new_category" />
 </navigation>

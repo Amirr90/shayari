@@ -6,9 +6,13 @@ import android.app.DownloadManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,7 +43,6 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.Query;
 import com.shaayaari.databinding.FragmentDataBinding;
 import com.shaayaari.databinding.ShayariView2Binding;
@@ -245,12 +248,7 @@ public class DataFragment extends Fragment {
                         showDeleteDialog(id, position);
                     }
                 });
-                /*  setBannerAdd(holder.binding.adView);*/
 
-              /*  if (position % 2 == 0)
-                    holder.binding.getRoot().setBackgroundColor(getResources().getColor(R.color.colorGray));
-                else
-                    holder.binding.getRoot().setBackgroundColor(getResources().getColor(R.color.white));*/
 
             }
 
@@ -305,7 +303,7 @@ public class DataFragment extends Fragment {
         getFireStoreReference().collection(AppConstant.DATA).document(msgId).delete().addOnSuccessListener(aVoid -> {
             AppUtils.hideDialog();
             Toast.makeText(requireActivity(), "Delete !!", Toast.LENGTH_SHORT).show();
-            //adapter.refresh();
+            adapter.refresh();
 
         }).addOnFailureListener(e -> {
             AppUtils.hideDialog();
@@ -436,6 +434,59 @@ public class DataFragment extends Fragment {
         }
     };
 
+    public Bitmap addWatermark(Bitmap source) {
+        int width, height;
+        Canvas canvas;
+        Paint paint;
+        Bitmap bitmap, watermark;
+        Matrix matrix;
+        float scale;
+        RectF rectF;
+        width = source.getWidth();
+        height = source.getHeight();
+
+        // Create a new bitmap file and draw it on the canvas
+        bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG | Paint.FILTER_BITMAP_FLAG);
+        canvas = new Canvas(bitmap);
+        canvas.drawBitmap(source, 0, 0, paint);
+
+
+        // now ready your  watermark from the resources
+        watermark = BitmapFactory.decodeResource(getResources(), R.drawable.demo);
+
+
+        // scale / adjust height of your logo/watermark
+        // i am scaling it down to 30%
+        scale = (float) (((float) height * 0.30) / (float) watermark.getHeight());
+        // now create the matrix
+        matrix = new Matrix();
+        matrix.postScale(scale, scale);
+        // Determine the post-scaled size of the watermark
+        rectF = new RectF(0, 0, watermark.getWidth(), watermark.getHeight());
+        matrix.mapRect(rectF);
+
+        // below method will decide the position of the logo on the image
+        //for right bottom corner use below line
+
+        // matrix.postTranslate(width - rectF.width(), height - rectF.height());
+
+        // i am going to add it my logo at the top left corner
+        matrix.postTranslate(15, 15);
+
+
+        // set alpha/opacity of paint which is going to draw watermark
+        paint.setAlpha(60);
+        // now draw the watermark on the canvas
+        canvas.drawBitmap(watermark, matrix, paint);
+
+        //cleaning up the memory
+        watermark.recycle();
+
+        // now return the watermarked image to the calling location
+        return bitmap;
+    }
+
     private void downloadImage(String url) {
 
         //Download Image
@@ -454,12 +505,15 @@ public class DataFragment extends Fragment {
     }
 
     public void shareImage(String url, String imageName) {
+        String supportUrl = "\nhttps://play.google.com/store/apps/details?id=com.shaayaari";
         Picasso.get().load(url).into(new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 Intent i = new Intent(Intent.ACTION_SEND);
                 i.setType("image/*");
-                i.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(bitmap, imageName));
+                // i.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(bitmap, imageName));
+                i.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(addWatermark(bitmap), imageName));
+                i.putExtra(Intent.EXTRA_TEXT, supportUrl);
                 AppUtils.hideDialog();
                 startActivity(Intent.createChooser(i, "Share Image"));
             }
@@ -484,8 +538,6 @@ public class DataFragment extends Fragment {
             FileOutputStream out = new FileOutputStream(file);
             bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
             out.close();
-            //bmpUri = Uri.fromFile(file);
-
             bmpUri = FileProvider.getUriForFile(
                     requireActivity(),
                     "com.shaayaari.provider", //(use your app signature + ".provider" )

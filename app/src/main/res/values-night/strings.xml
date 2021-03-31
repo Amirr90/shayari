@@ -16,4 +16,5 @@
     <string name="category">"Category "</string>
     <string name="todo">todo</string>
     <string name="adding_msg">Adding msg</string>
+    <string name="add_new_category">Add New Category</string>
 </resources>

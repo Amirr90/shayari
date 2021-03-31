@@ -156,7 +156,6 @@ public class DashboardFragment extends Fragment implements AdapterInterface {
             action.setId(id);
             navController.navigate(action);
         }
-
-
     }
+
 }
