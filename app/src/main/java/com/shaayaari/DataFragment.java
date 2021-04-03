@@ -294,11 +294,11 @@ public class DataFragment extends Fragment {
     private void showDeleteDialog(String msgId, int position) {
         new AlertDialog.Builder(requireActivity()).setMessage("Delete this msg ??").setPositiveButton("Yes", (dialog, which) -> {
             dialog.dismiss();
-            deleteMsg(msgId, position);
+            deleteMsg(msgId);
         }).setNegativeButton("No", (dialog, which) -> dialog.dismiss()).show();
     }
 
-    private void deleteMsg(String msgId, int position) {
+    private void deleteMsg(String msgId) {
         AppUtils.showRequestDialog(requireActivity());
         getFireStoreReference().collection(AppConstant.DATA).document(msgId).delete().addOnSuccessListener(aVoid -> {
             AppUtils.hideDialog();
@@ -458,7 +458,7 @@ public class DataFragment extends Fragment {
 
         // scale / adjust height of your logo/watermark
         // i am scaling it down to 30%
-        scale = (float) (((float) height * 0.30) / (float) watermark.getHeight());
+        scale = (float) (((float) height * 0.25) / (float) watermark.getHeight());
         // now create the matrix
         matrix = new Matrix();
         matrix.postScale(scale, scale);
@@ -469,14 +469,14 @@ public class DataFragment extends Fragment {
         // below method will decide the position of the logo on the image
         //for right bottom corner use below line
 
-        // matrix.postTranslate(width - rectF.width(), height - rectF.height());
+        matrix.postTranslate(width - rectF.width(), height - rectF.height());
 
         // i am going to add it my logo at the top left corner
-        matrix.postTranslate(15, 15);
+        // matrix.postTranslate(15, 15);
 
 
         // set alpha/opacity of paint which is going to draw watermark
-        paint.setAlpha(60);
+        paint.setAlpha(80);
         // now draw the watermark on the canvas
         canvas.drawBitmap(watermark, matrix, paint);
 
